@@ -2,6 +2,7 @@ package com.edgareldy.springgraphqltutorial;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 
 /**
  * Smoke test verifying the Spring application context starts successfully.
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  * Project : spring-graphql-tutorial
  */
 @SpringBootTest
+@Import(TestcontainersConfiguration.class)
 class SpringGraphqlTutorialApplicationTests {
 
 	@Test
