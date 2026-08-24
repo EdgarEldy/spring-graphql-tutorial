@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: spring-graphql-tutorial
+  jpa:
+    hibernate:
+      ddl-auto: validate

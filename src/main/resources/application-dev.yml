@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/spring_graphql_tutorial
+    username: admin
+    password: admin
+  jpa:
+    show-sql: true
+  graphql:
+    graphiql:
+      enabled: true
+      path: /graphiql
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+logging:
+  level:
+    com.edgareldy.springgraphqltutorial: DEBUG

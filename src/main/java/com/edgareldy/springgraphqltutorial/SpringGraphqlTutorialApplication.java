@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Entry point of the spring-graphql-tutorial application.
  * <p>
- * Created edgar.muhamyangabo on 8/24/26
- * Author : edgar.muhamyangabo
+ * Created by Edgar Muhamyangabo on 8/24/26
+ * Author : Edgar Muhamyangabo
  * Date : 8/24/26
  * Project : spring-graphql-tutorial
  */

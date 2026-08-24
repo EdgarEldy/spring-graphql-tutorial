@@ -207,16 +207,16 @@ public class GraphQlExceptionResolver implements DataFetcherExceptionResolver {
 
 ### Tasks
 
-- [ ] Initialize the project (Maven, Java 17, Spring Boot 4.1.x)
-- [ ] Dependencies: `spring-boot-starter-graphql`, `spring-boot-starter-data-jpa`, `spring-boot-starter-security`, `spring-boot-starter-websocket` (for subscriptions), `spring-boot-starter-actuator`, `flyway-core`, `postgresql`, `lombok`
-- [ ] Test dependencies: `spring-boot-starter-test` (includes `HttpGraphQlTester`), `testcontainers`
-- [ ] `schema.graphqls`: base `Query`, `Mutation`, `Subscription` root types (empty, extended by each following branch), scalar declarations if needed
-- [ ] `GraphQlConfig`: `RuntimeWiringConfigurer` for any custom scalar
-- [ ] `GraphQlExceptionResolver`
-- [ ] `DataLoaderConfig` skeleton - no loaders registered yet, later branches add their own
-- [ ] Flyway script `V1__init_schema.sql` (all tables from both domains)
-- [ ] GraphiQL enabled at `/graphiql` in the `dev` profile only
-- [ ] `docker-compose.yml` (app + PostgreSQL), `.github/workflows/ci.yml`
+- [x] Initialize the project (Maven, Java 17, Spring Boot 4.1.x)
+- [x] Dependencies: `spring-boot-starter-graphql`, `spring-boot-starter-data-jpa`, `spring-boot-starter-security`, `spring-boot-starter-websocket` (for subscriptions), `spring-boot-starter-actuator`, `flyway-core`, `postgresql`, `lombok`
+- [x] Test dependencies: `spring-boot-starter-test` (includes `HttpGraphQlTester`), `testcontainers`
+- [x] `schema.graphqls`: base `Query`, `Mutation`, `Subscription` root types (empty, extended by each following branch), scalar declarations if needed
+- [x] `GraphQlConfig`: `RuntimeWiringConfigurer` for any custom scalar
+- [x] `GraphQlExceptionResolver`
+- [x] `DataLoaderConfig` skeleton - no loaders registered yet, later branches add their own
+- [x] Flyway script `V1__init_schema.sql` (all tables from both domains)
+- [x] GraphiQL enabled at `/graphiql` in the `dev` profile only
+- [x] `docker-compose.yml` (app + PostgreSQL), `.github/workflows/ci.yml`
 
 ## feature/auth
 

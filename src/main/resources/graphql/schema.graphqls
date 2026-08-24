@@ -1,0 +1,16 @@
+# Root types for the schema. GraphQL requires an object type to declare at
+# least one field, so each root type carries a temporary "_empty" placeholder
+# field until the first branch that needs it (feature/auth for Query and
+# Mutation, feature/orders for Subscription) adds real fields and removes it.
+
+type Query {
+    _empty: Boolean
+}
+
+type Mutation {
+    _empty: Boolean
+}
+
+type Subscription {
+    _empty: Boolean
+}
