@@ -293,11 +293,11 @@ Authentication, plus full administration of users, roles, and permissions.
 
 ### Tasks
 
-- [ ] `Category` entity, repository, contract/implementation service
-- [ ] `CategoryController` (`@QueryMapping`/`@MutationMapping`)
-- [ ] Business rule: deleting a category that still has products is rejected (`BusinessRuleException` → `BAD_REQUEST`)
-- [ ] Extend `schema.graphqls`: `Category`, `CategoryPage`, `CategoryInput`
-- [ ] Tests: `HttpGraphQlTester` for every query and mutation, including the rejection case above
+- [x] `Category` entity, repository, contract/implementation service
+- [x] `CategoryController` (`@QueryMapping`/`@MutationMapping`)
+- [x] Business rule: deleting a category that still has products is rejected (`BusinessRuleException` → `BAD_REQUEST`)
+- [x] Extend `schema.graphqls`: `Category`, `CategoryPage`, `CategoryInput`
+- [x] Tests: `HttpGraphQlTester` for every query and mutation, including the rejection case above
 
 ## feature/products
 
