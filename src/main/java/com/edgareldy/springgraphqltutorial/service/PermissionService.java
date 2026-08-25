@@ -3,6 +3,8 @@ package com.edgareldy.springgraphqltutorial.service;
 import java.util.List;
 
 import com.edgareldy.springgraphqltutorial.entity.Permission;
+import com.edgareldy.springgraphqltutorial.exception.BusinessRuleException;
+import com.edgareldy.springgraphqltutorial.exception.ResourceNotFoundException;
 import com.edgareldy.springgraphqltutorial.graphql.input.PermissionInput;
 
 /**
@@ -19,8 +21,15 @@ public interface PermissionService {
 
 	List<Permission> findAll();
 
+	/**
+	 * @throws BusinessRuleException if a permission already exists for this
+	 * resource/action pair
+	 */
 	Permission create(PermissionInput input);
 
+	/**
+	 * @throws ResourceNotFoundException if no permission has this id
+	 */
 	void delete(Long id);
 
 }
