@@ -35,6 +35,10 @@ public class DataLoaderConfig {
 
 	public DataLoaderConfig(BatchLoaderRegistry registry, UserRepository userRepository,
 			RoleRepository roleRepository) {
+		// Built with an explicit loop rather than Collectors.toMap: the collector
+		// infers ArrayList as the map's value type from the lambda alone, which
+		// does not satisfy the Map<Long, List<Role>> the batch loader is declared
+		// to return and fails to compile.
 		registry.<Long, List<Role>>forName("userRoles").registerMappedBatchLoader((userIds, env) ->
 				Mono.fromCallable(() -> {
 					Map<Long, List<Role>> map = new HashMap<>();
