@@ -86,6 +86,8 @@ public class UserServiceImpl implements UserService {
 				.build();
 		activationTokenRepository.save(activationToken);
 
+		// No token: the account is disabled until activateAccount runs, so a JWT
+		// issued here would authenticate an account that cannot use it yet.
 		return new AuthPayload(null, user);
 	}
 
@@ -110,6 +112,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public AuthPayload login(LoginInput input) {
+		// Same message whether the email is unknown or the password is wrong, so
+		// a caller can never use this mutation to probe which emails are registered.
 		User user = userRepository.findByEmail(input.email())
 				.orElseThrow(() -> new BusinessRuleException("Invalid email or password"));
 		if (!passwordEncoder.matches(input.password(), user.getPassword())) {
@@ -129,6 +133,8 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public boolean logout(String rawToken) {
 		String jti = jwtService.extractJti(rawToken);
+		// Already blacklisted: treat a repeat logout call as a success rather than
+		// failing on the jti unique constraint by inserting it a second time.
 		if (blacklistedTokenRepository.existsByJti(jti)) {
 			return true;
 		}
@@ -148,6 +154,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public boolean requestPasswordReset(String email) {
+		// Returns false rather than a NOT_FOUND error for an unknown email, so this
+		// mutation cannot be used to probe which addresses have an account here.
 		return userRepository.findByEmail(email).map(user -> {
 			PasswordResetToken resetToken = PasswordResetToken.builder()
 					.user(user)
