@@ -9,6 +9,9 @@ type Query {
     roles: [Role!]!
     role(id: ID!): Role
     permissions: [Permission!]!
+
+    categories(page: Int, size: Int): CategoryPage!
+    category(id: ID!): Category
 }
 
 type Mutation {
@@ -34,6 +37,10 @@ type Mutation {
     deletePermission(id: ID!): Boolean!
     assignPermissionToRole(roleId: ID!, permissionId: ID!): Role!
     removePermissionFromRole(roleId: ID!, permissionId: ID!): Role!
+
+    createCategory(input: CategoryInput!): Category!
+    updateCategory(id: ID!, input: CategoryInput!): Category!
+    deleteCategory(id: ID!): Boolean!
 }
 
 type Subscription {
@@ -107,4 +114,21 @@ input RoleInput {
 input PermissionInput {
     resource: String!
     action: String!
+}
+
+type Category {
+    id: ID!
+    categoryName: String!
+}
+
+type CategoryPage {
+    content: [Category!]!
+    totalElements: Int!
+    totalPages: Int!
+    page: Int!
+    size: Int!
+}
+
+input CategoryInput {
+    categoryName: String!
 }
