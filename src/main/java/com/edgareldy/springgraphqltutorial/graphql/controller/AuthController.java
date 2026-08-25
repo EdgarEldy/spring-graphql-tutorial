@@ -11,6 +11,7 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.ContextValue;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -71,7 +72,11 @@ public class AuthController {
 	@QueryMapping
 	public User me() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null) {
+		// Spring Security always populates an AnonymousAuthenticationToken when no
+		// real principal is authenticated, so getAuthentication() itself is never
+		// null: an unauthenticated request has to be detected this way instead.
+		if (authentication == null || authentication instanceof AnonymousAuthenticationToken
+				|| !authentication.isAuthenticated()) {
 			return null;
 		}
 		return userService.findByEmail(authentication.getName());
