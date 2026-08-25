@@ -265,19 +265,19 @@ Authentication, plus full administration of users, roles, and permissions.
 
 ### Tasks
 
-- [ ] `User`, `Role`, `Permission` entities (`@ManyToMany` via `role_user`/`role_permission`), `ActivationToken`, `BlacklistedToken`, `PasswordResetToken`
-- [ ] `UserRepository`, `RoleRepository`, `PermissionRepository`
-- [ ] `UserService`, `RoleService`, `PermissionService` (interfaces) + implementations: `RoleService`/`UserService` own the assignment operations (`assignRoleToUser`, `assignPermissionToRole`, and their inverses), since assigning a role is a relationship change on the aggregate, not a separate entity to manage
-- [ ] `JwtService`: signs/validates tokens
-- [ ] `JwtContextInterceptor` (`WebGraphQlInterceptor`): reads the `Authorization` header on every GraphQL request (including the WebSocket handshake for subscriptions), resolves the current user, and adds it to the `GraphQLContext`
-- [ ] `AuthController`: authentication mutations, delegating to `UserService`
-- [ ] `UserController`: user administration queries/mutations, including the two assignment mutations
-- [ ] `RoleController`: role/permission administration queries/mutations, including the two assignment mutations
-- [ ] `UserRolesResolver` (`@SchemaMapping(typeName = "User", field = "roles")`) and `RolePermissionsResolver` (`@SchemaMapping(typeName = "Role", field = "permissions")`), both batched via `DataLoader` - listing users with their roles, or roles with their permissions, is exactly the N+1-prone pattern this tutorial's `DataLoader` convention exists for
-- [ ] `DataLoaderConfig` updated with both loaders
-- [ ] Authorization via Spring Security method annotations (`@PreAuthorize`) directly on controller methods - administration mutations require `ROLE_ADMIN`, authentication mutations stay public or require only an authenticated session as appropriate
-- [ ] Extend `schema.graphqls` with `User`, `Role`, `Permission`, `UserPage`, `RegisterInput`, `LoginInput`, `AuthPayload`, `CreateUserInput`, `UpdateUserInput`, `RoleInput`, `PermissionInput`
-- [ ] Tests: `HttpGraphQlTester` covering register → activate → login, the full admin flow (create a role, create a permission, assign the permission to the role, create a user, assign the role to the user), a `DataLoader` batching test on `User.roles`, and a `@PreAuthorize`-protected mutation rejecting a non-admin request
+- [x] `User`, `Role`, `Permission` entities (`@ManyToMany` via `role_user`/`role_permission`), `ActivationToken`, `BlacklistedToken`, `PasswordResetToken`
+- [x] `UserRepository`, `RoleRepository`, `PermissionRepository`
+- [x] `UserService`, `RoleService`, `PermissionService` (interfaces) + implementations: `RoleService`/`UserService` own the assignment operations (`assignRoleToUser`, `assignPermissionToRole`, and their inverses), since assigning a role is a relationship change on the aggregate, not a separate entity to manage
+- [x] `JwtService`: signs/validates tokens
+- [x] `JwtContextInterceptor` (`WebGraphQlInterceptor`): reads the `Authorization` header on every GraphQL request (including the WebSocket handshake for subscriptions), resolves the current user, and adds it to the `GraphQLContext`
+- [x] `AuthController`: authentication mutations, delegating to `UserService`
+- [x] `UserController`: user administration queries/mutations, including the two assignment mutations
+- [x] `RoleController`: role/permission administration queries/mutations, including the two assignment mutations
+- [x] `UserRolesResolver` (`@SchemaMapping(typeName = "User", field = "roles")`) and `RolePermissionsResolver` (`@SchemaMapping(typeName = "Role", field = "permissions")`), both batched via `DataLoader` - listing users with their roles, or roles with their permissions, is exactly the N+1-prone pattern this tutorial's `DataLoader` convention exists for
+- [x] `DataLoaderConfig` updated with both loaders
+- [x] Authorization via Spring Security method annotations (`@PreAuthorize`) directly on controller methods - administration mutations require `ROLE_ADMIN`, authentication mutations stay public or require only an authenticated session as appropriate
+- [x] Extend `schema.graphqls` with `User`, `Role`, `Permission`, `UserPage`, `RegisterInput`, `LoginInput`, `AuthPayload`, `CreateUserInput`, `UpdateUserInput`, `RoleInput`, `PermissionInput`
+- [x] Tests: `HttpGraphQlTester` covering register → activate → login, the full admin flow (create a role, create a permission, assign the permission to the role, create a user, assign the role to the user), a `DataLoader` batching test on `User.roles`, and a `@PreAuthorize`-protected mutation rejecting a non-admin request
 
 ## feature/categories
 
