@@ -1,16 +1,110 @@
-# Root types for the schema. GraphQL requires an object type to declare at
-# least one field, so each root type carries a temporary "_empty" placeholder
-# field until the first branch that needs it (feature/auth for Query and
-# Mutation, feature/orders for Subscription) adds real fields and removes it.
+# Root types for the schema. Subscription still carries the "_empty"
+# placeholder since feature/orders is the branch that gives it a real field;
+# Query and Mutation lost theirs the moment feature/auth added real fields.
 
 type Query {
-    _empty: Boolean
+    me: User
+    users(page: Int, size: Int): UserPage!
+    user(id: ID!): User
+    roles: [Role!]!
+    role(id: ID!): Role
+    permissions: [Permission!]!
 }
 
 type Mutation {
-    _empty: Boolean
+    register(input: RegisterInput!): AuthPayload!
+    activateAccount(token: String!): Boolean!
+    login(input: LoginInput!): AuthPayload!
+    logout: Boolean!
+    requestPasswordReset(email: String!): Boolean!
+    resetPassword(token: String!, newPassword: String!): Boolean!
+
+    createUser(input: CreateUserInput!): User!
+    updateUser(id: ID!, input: UpdateUserInput!): User!
+    lockUser(id: ID!): User!
+    unlockUser(id: ID!): User!
+    deleteUser(id: ID!): Boolean!
+    assignRoleToUser(userId: ID!, roleId: ID!): User!
+    removeRoleFromUser(userId: ID!, roleId: ID!): User!
+
+    createRole(input: RoleInput!): Role!
+    updateRole(id: ID!, input: RoleInput!): Role!
+    deleteRole(id: ID!): Boolean!
+    createPermission(input: PermissionInput!): Permission!
+    deletePermission(id: ID!): Boolean!
+    assignPermissionToRole(roleId: ID!, permissionId: ID!): Role!
+    removePermissionFromRole(roleId: ID!, permissionId: ID!): Role!
 }
 
 type Subscription {
     _empty: Boolean
+}
+
+type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    email: String!
+    enabled: Boolean!
+    accountLocked: Boolean!
+    roles: [Role!]!
+}
+
+type Role {
+    id: ID!
+    roleName: String!
+    permissions: [Permission!]!
+}
+
+type Permission {
+    id: ID!
+    resource: String!
+    action: String!
+}
+
+type UserPage {
+    content: [User!]!
+    totalElements: Int!
+    totalPages: Int!
+    page: Int!
+    size: Int!
+}
+
+type AuthPayload {
+    token: String
+    user: User!
+}
+
+input RegisterInput {
+    firstName: String!
+    lastName: String!
+    email: String!
+    password: String!
+}
+
+input LoginInput {
+    email: String!
+    password: String!
+}
+
+input CreateUserInput {
+    firstName: String!
+    lastName: String!
+    email: String!
+    password: String!
+}
+
+input UpdateUserInput {
+    firstName: String!
+    lastName: String!
+    email: String!
+}
+
+input RoleInput {
+    roleName: String!
+}
+
+input PermissionInput {
+    resource: String!
+    action: String!
 }
