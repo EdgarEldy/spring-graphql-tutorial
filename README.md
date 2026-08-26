@@ -354,12 +354,12 @@ Depends on `feature/categories` existing, since every product references one.
 
 ### Tasks
 
-- [ ] `Order` entity, `OrderRepository`, `OrderService` (interface) + implementation: computes `total = quantity * product.unitPrice`
-- [ ] `OrderController`: `@QueryMapping`/`@MutationMapping` for queries/mutations, `@SubscriptionMapping` returning a `Flux<Order>` for `orderCreated`
-- [ ] `OrderFieldResolver` (`@SchemaMapping` for `Order.customer` and `Order.product`), both batched via `DataLoader`
-- [ ] `Sinks.Many<Order>` bean: `OrderService` emits into it after persisting a new order, `orderCreated`'s `Flux` is `sink.asFlux()`
-- [ ] Extend `schema.graphqls`: `Order`, `OrderPage`, `OrderInput`, and the `orderCreated` field on the `Subscription` type
-- [ ] Tests: `HttpGraphQlTester` for queries/mutations, `WebSocketGraphQlTester` subscribing to `orderCreated` and asserting an event arrives after a `createOrder` mutation, and a `DataLoader` batching test for `Order.customer`/`Order.product` symmetric to the one in `feature/products`
+- [x] `Order` entity, `OrderRepository`, `OrderService` (interface) + implementation: computes `total = quantity * product.unitPrice`
+- [x] `OrderController`: `@QueryMapping`/`@MutationMapping` for queries/mutations, `@SubscriptionMapping` returning a `Flux<Order>` for `orderCreated`
+- [x] `OrderFieldResolver` (`@SchemaMapping` for `Order.customer` and `Order.product`), both batched via `DataLoader`
+- [x] `Sinks.Many<Order>` bean: `OrderService` emits into it after persisting a new order, `orderCreated`'s `Flux` is `sink.asFlux()`
+- [x] Extend `schema.graphqls`: `Order`, `OrderPage`, `OrderInput`, and the `orderCreated` field on the `Subscription` type
+- [x] Tests: `HttpGraphQlTester` for queries/mutations, `WebSocketGraphQlTester` subscribing to `orderCreated` and asserting an event arrives after a `createOrder` mutation, and a `DataLoader` batching test for `Order.customer`/`Order.product` symmetric to the one in `feature/products`
 
 ## Order of work
 

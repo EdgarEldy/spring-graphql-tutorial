@@ -22,7 +22,10 @@ import org.springframework.graphql.test.tester.HttpGraphQlTester;
  * CLAUDE.md requires a test for on every relation the DataLoaderConfig
  * batches (userRoles/rolePermissions on feature/auth, the
  * forTypePair(Long.class, Category.class) loader added on
- * feature/products). Hibernate Statistics on the running application's
+ * feature/products, and the forTypePair(Long.class, Customer.class)/
+ * forTypePair(Long.class, Product.class) loaders added on feature/orders
+ * for Order.customer/Order.product). Hibernate Statistics on the running
+ * application's
  * SessionFactory count real SQL statements, the same mechanism used by
  * the repository-level DataLoader tests (UserRepositoryTest,
  * RoleRepositoryTest) so this project has a single query-counting
@@ -227,6 +230,83 @@ class DataLoaderBatchingTest extends GraphQlIntegrationTestSupport {
 		assertThat(secondRunCategoryNames).contains(categoryName);
 		assertThat(queriesForSecondBatch).isEqualTo(queriesForFirstBatch);
 		assertThat(queriesForSecondBatch).isLessThanOrEqualTo(5L);
+	}
+
+	private long createCustomer(String email) {
+		return graphQlTester.document("""
+				mutation($email: String!) {
+				  createCustomer(input: { firstName: "Batch", lastName: "Customer", telephone: "555-0100", email: $email, address: "1 Batch Way" }) {
+				    id
+				  }
+				}
+				""")
+				.variable("email", email)
+				.execute()
+				.path("createCustomer.id")
+				.entity(Long.class)
+				.get();
+	}
+
+	private long createOrder(long customerId, long productId) {
+		return graphQlTester.document("""
+				mutation($customerId: ID!, $productId: ID!) {
+				  createOrder(input: { customerId: $customerId, productId: $productId, quantity: 1 }) {
+				    id
+				  }
+				}
+				""")
+				.variable("customerId", customerId)
+				.variable("productId", productId)
+				.execute()
+				.path("createOrder.id")
+				.entity(Long.class)
+				.get();
+	}
+
+	private List<String> fetchAllOrdersWithCustomerAndProduct() {
+		return graphQlTester.document("{ orders(size: 5000) { content { customer { email } product { productName } } } }")
+				.execute()
+				.path("orders.content[*].customer.email")
+				.entityList(String.class)
+				.get();
+	}
+
+	@Test
+	void orderCustomerAndProductResolveThroughAConstantNumberOfQueriesRegardlessOfOrderCount() {
+		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
+		String categoryName = "batch-order-category-" + UUID.randomUUID();
+		long categoryId = admin
+				.document("mutation($categoryName: String!) { createCategory(input: { categoryName: $categoryName }) { id } }")
+				.variable("categoryName", categoryName)
+				.execute()
+				.path("createCategory.id")
+				.entity(Long.class)
+				.get();
+		long productId = createProductInCategory(admin, categoryId);
+		String customerEmail = uniqueEmail("batch-order-customer");
+		long customerId = createCustomer(customerEmail);
+
+		for (int i = 0; i < 5; i++) {
+			createOrder(customerId, productId);
+		}
+
+		Statistics statistics = statistics();
+		statistics.clear();
+		List<String> firstRunCustomerEmails = fetchAllOrdersWithCustomerAndProduct();
+		long queriesForFirstBatch = statistics.getQueryExecutionCount();
+
+		for (int i = 0; i < 5; i++) {
+			createOrder(customerId, productId);
+		}
+
+		statistics.clear();
+		List<String> secondRunCustomerEmails = fetchAllOrdersWithCustomerAndProduct();
+		long queriesForSecondBatch = statistics.getQueryExecutionCount();
+
+		assertThat(firstRunCustomerEmails).contains(customerEmail);
+		assertThat(secondRunCustomerEmails).contains(customerEmail);
+		assertThat(queriesForSecondBatch).isEqualTo(queriesForFirstBatch);
+		assertThat(queriesForSecondBatch).isLessThanOrEqualTo(6L);
 	}
 
 }
