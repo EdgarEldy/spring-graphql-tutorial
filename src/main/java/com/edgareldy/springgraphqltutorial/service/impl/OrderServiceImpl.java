@@ -82,12 +82,17 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	private void emit(Order order) {
-		// tryEmitNext never blocks: a failed emission (no subscriber yet, or a
-		// transient contention on the sink) must not fail the mutation itself,
-		// createOrder already succeeded and was persisted. Only orderCreated
-		// subscribers miss this one event, logged here for visibility.
+		// tryEmitNext never blocks and its result never fails the mutation
+		// itself: createOrder already succeeded and was persisted, only
+		// orderCreated subscribers are affected by what happens here.
+		// FAIL_ZERO_SUBSCRIBER is the ordinary state of a directBestEffort sink
+		// whenever no client currently has an open orderCreated subscription,
+		// not an anomaly worth a warning. Any other failure means a
+		// subscriber that was actually listening missed this event.
 		Sinks.EmitResult result = orderSink.tryEmitNext(order);
-		if (result.isFailure()) {
+		if (result == Sinks.EmitResult.FAIL_ZERO_SUBSCRIBER) {
+			log.debug("No orderCreated subscriber connected, order {} was not broadcast", order.getId());
+		} else if (result.isFailure()) {
 			log.warn("Failed to emit order {} to orderCreated subscribers: {}", order.getId(), result);
 		}
 	}

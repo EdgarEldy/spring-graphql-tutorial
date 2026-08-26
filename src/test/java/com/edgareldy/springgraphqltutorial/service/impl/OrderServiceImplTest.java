@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,7 +65,11 @@ class OrderServiceImplTest {
 		// A real sink rather than a mock: verifying what a mutation on
 		// Sinks.Many actually publishes is more meaningful, and more resistant
 		// to a refactor, than asserting a mock recorded a tryEmitNext call.
-		orderSink = Sinks.many().multicast().onBackpressureBuffer();
+		// Must match OrderEventsConfig's directBestEffort() exactly: an
+		// onBackpressureBuffer() sink here would replay a pre-subscription
+		// emission to whichever subscriber attaches first, the exact
+		// production bug this test class exists to guard against.
+		orderSink = Sinks.many().multicast().directBestEffort();
 		orderService = new OrderServiceImpl(orderRepository, customerRepository, productRepository, orderSink);
 	}
 
@@ -193,15 +198,20 @@ class OrderServiceImplTest {
 		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 		when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-		// onBackpressureBuffer() buffers for future subscribers instead of
-		// failing tryEmitNext when nobody is subscribed yet, so this must
-		// still return the created order rather than throwing.
+		// directBestEffort() never buffers: with nobody subscribed yet,
+		// tryEmitNext resolves to FAIL_ZERO_SUBSCRIBER and the order is simply
+		// not broadcast, but create() itself must still succeed since the
+		// order was already persisted before this emission was attempted.
 		Order created = orderService.create(input);
 
 		assertThat(created.getQuantity()).isEqualTo(1);
-		StepVerifier.create(orderSink.asFlux().take(1))
-				.expectNextMatches(order -> order.getQuantity() == 1)
-				.verifyComplete();
+
+		// A subscriber attaching only after create() ran must not receive
+		// that earlier order: directBestEffort has no replay/warm-up buffer,
+		// unlike onBackpressureBuffer, which is exactly the bug this project
+		// hit when the two were confused (see OrderEventsConfig's Javadoc).
+		StepVerifier.create(orderSink.asFlux().take(1).timeout(Duration.ofMillis(200)))
+				.verifyError();
 	}
 
 }
