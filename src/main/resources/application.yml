@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: spring-graphql-tutorial
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  graphql:
+    websocket:
+      path: /graphql
+
+jwt:
+  secret: ${JWT_SECRET:dev-only-jwt-secret-please-override-in-production-0123456789}
+  expiration-ms: 3600000

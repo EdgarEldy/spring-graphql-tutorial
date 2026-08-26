@@ -207,16 +207,16 @@ public class GraphQlExceptionResolver implements DataFetcherExceptionResolver {
 
 ### Tasks
 
-- [ ] Initialize the project (Maven, Java 17, Spring Boot 4.1.x)
-- [ ] Dependencies: `spring-boot-starter-graphql`, `spring-boot-starter-data-jpa`, `spring-boot-starter-security`, `spring-boot-starter-websocket` (for subscriptions), `spring-boot-starter-actuator`, `flyway-core`, `postgresql`, `lombok`
-- [ ] Test dependencies: `spring-boot-starter-test` (includes `HttpGraphQlTester`), `testcontainers`
-- [ ] `schema.graphqls`: base `Query`, `Mutation`, `Subscription` root types (empty, extended by each following branch), scalar declarations if needed
-- [ ] `GraphQlConfig`: `RuntimeWiringConfigurer` for any custom scalar
-- [ ] `GraphQlExceptionResolver`
-- [ ] `DataLoaderConfig` skeleton - no loaders registered yet, later branches add their own
-- [ ] Flyway script `V1__init_schema.sql` (all tables from both domains)
-- [ ] GraphiQL enabled at `/graphiql` in the `dev` profile only
-- [ ] `docker-compose.yml` (app + PostgreSQL), `.github/workflows/ci.yml`
+- [x] Initialize the project (Maven, Java 17, Spring Boot 4.1.x)
+- [x] Dependencies: `spring-boot-starter-graphql`, `spring-boot-starter-data-jpa`, `spring-boot-starter-security`, `spring-boot-starter-websocket` (for subscriptions), `spring-boot-starter-actuator`, `flyway-core`, `postgresql`, `lombok`
+- [x] Test dependencies: `spring-boot-starter-test` (includes `HttpGraphQlTester`), `testcontainers`
+- [x] `schema.graphqls`: base `Query`, `Mutation`, `Subscription` root types (empty, extended by each following branch), scalar declarations if needed
+- [x] `GraphQlConfig`: `RuntimeWiringConfigurer` for any custom scalar
+- [x] `GraphQlExceptionResolver`
+- [x] `DataLoaderConfig` skeleton - no loaders registered yet, later branches add their own
+- [x] Flyway script `V1__init_schema.sql` (all tables from both domains)
+- [x] GraphiQL enabled at `/graphiql` in the `dev` profile only
+- [x] `docker-compose.yml` (app + PostgreSQL), `.github/workflows/ci.yml`
 
 ## feature/auth
 
@@ -265,19 +265,19 @@ Authentication, plus full administration of users, roles, and permissions.
 
 ### Tasks
 
-- [ ] `User`, `Role`, `Permission` entities (`@ManyToMany` via `role_user`/`role_permission`), `ActivationToken`, `BlacklistedToken`, `PasswordResetToken`
-- [ ] `UserRepository`, `RoleRepository`, `PermissionRepository`
-- [ ] `UserService`, `RoleService`, `PermissionService` (interfaces) + implementations: `RoleService`/`UserService` own the assignment operations (`assignRoleToUser`, `assignPermissionToRole`, and their inverses), since assigning a role is a relationship change on the aggregate, not a separate entity to manage
-- [ ] `JwtService`: signs/validates tokens
-- [ ] `JwtContextInterceptor` (`WebGraphQlInterceptor`): reads the `Authorization` header on every GraphQL request (including the WebSocket handshake for subscriptions), resolves the current user, and adds it to the `GraphQLContext`
-- [ ] `AuthController`: authentication mutations, delegating to `UserService`
-- [ ] `UserController`: user administration queries/mutations, including the two assignment mutations
-- [ ] `RoleController`: role/permission administration queries/mutations, including the two assignment mutations
-- [ ] `UserRolesResolver` (`@SchemaMapping(typeName = "User", field = "roles")`) and `RolePermissionsResolver` (`@SchemaMapping(typeName = "Role", field = "permissions")`), both batched via `DataLoader` - listing users with their roles, or roles with their permissions, is exactly the N+1-prone pattern this tutorial's `DataLoader` convention exists for
-- [ ] `DataLoaderConfig` updated with both loaders
-- [ ] Authorization via Spring Security method annotations (`@PreAuthorize`) directly on controller methods - administration mutations require `ROLE_ADMIN`, authentication mutations stay public or require only an authenticated session as appropriate
-- [ ] Extend `schema.graphqls` with `User`, `Role`, `Permission`, `UserPage`, `RegisterInput`, `LoginInput`, `AuthPayload`, `CreateUserInput`, `UpdateUserInput`, `RoleInput`, `PermissionInput`
-- [ ] Tests: `HttpGraphQlTester` covering register → activate → login, the full admin flow (create a role, create a permission, assign the permission to the role, create a user, assign the role to the user), a `DataLoader` batching test on `User.roles`, and a `@PreAuthorize`-protected mutation rejecting a non-admin request
+- [x] `User`, `Role`, `Permission` entities (`@ManyToMany` via `role_user`/`role_permission`), `ActivationToken`, `BlacklistedToken`, `PasswordResetToken`
+- [x] `UserRepository`, `RoleRepository`, `PermissionRepository`
+- [x] `UserService`, `RoleService`, `PermissionService` (interfaces) + implementations: `RoleService`/`UserService` own the assignment operations (`assignRoleToUser`, `assignPermissionToRole`, and their inverses), since assigning a role is a relationship change on the aggregate, not a separate entity to manage
+- [x] `JwtService`: signs/validates tokens
+- [x] `JwtContextInterceptor` (`WebGraphQlInterceptor`): reads the `Authorization` header on every GraphQL request (including the WebSocket handshake for subscriptions), resolves the current user, and adds it to the `GraphQLContext`
+- [x] `AuthController`: authentication mutations, delegating to `UserService`
+- [x] `UserController`: user administration queries/mutations, including the two assignment mutations
+- [x] `RoleController`: role/permission administration queries/mutations, including the two assignment mutations
+- [x] `UserRolesResolver` (`@SchemaMapping(typeName = "User", field = "roles")`) and `RolePermissionsResolver` (`@SchemaMapping(typeName = "Role", field = "permissions")`), both batched via `DataLoader` - listing users with their roles, or roles with their permissions, is exactly the N+1-prone pattern this tutorial's `DataLoader` convention exists for
+- [x] `DataLoaderConfig` updated with both loaders
+- [x] Authorization via Spring Security method annotations (`@PreAuthorize`) directly on controller methods - administration mutations require `ROLE_ADMIN`, authentication mutations stay public or require only an authenticated session as appropriate
+- [x] Extend `schema.graphqls` with `User`, `Role`, `Permission`, `UserPage`, `RegisterInput`, `LoginInput`, `AuthPayload`, `CreateUserInput`, `UpdateUserInput`, `RoleInput`, `PermissionInput`
+- [x] Tests: `HttpGraphQlTester` covering register → activate → login, the full admin flow (create a role, create a permission, assign the permission to the role, create a user, assign the role to the user), a `DataLoader` batching test on `User.roles`, and a `@PreAuthorize`-protected mutation rejecting a non-admin request
 
 ## feature/categories
 
@@ -293,11 +293,11 @@ Authentication, plus full administration of users, roles, and permissions.
 
 ### Tasks
 
-- [ ] `Category` entity, repository, contract/implementation service
-- [ ] `CategoryController` (`@QueryMapping`/`@MutationMapping`)
-- [ ] Business rule: deleting a category that still has products is rejected (`BusinessRuleException` → `BAD_REQUEST`)
-- [ ] Extend `schema.graphqls`: `Category`, `CategoryPage`, `CategoryInput`
-- [ ] Tests: `HttpGraphQlTester` for every query and mutation, including the rejection case above
+- [x] `Category` entity, repository, contract/implementation service
+- [x] `CategoryController` (`@QueryMapping`/`@MutationMapping`)
+- [x] Business rule: deleting a category that still has products is rejected (`BusinessRuleException` → `BAD_REQUEST`)
+- [x] Extend `schema.graphqls`: `Category`, `CategoryPage`, `CategoryInput`
+- [x] Tests: `HttpGraphQlTester` for every query and mutation, including the rejection case above
 
 ## feature/products
 
@@ -315,12 +315,12 @@ Depends on `feature/categories` existing, since every product references one.
 
 ### Tasks
 
-- [ ] `Product` entity, repository, contract/implementation service
-- [ ] `ProductController` (`@QueryMapping`/`@MutationMapping`)
-- [ ] `ProductCategoryResolver` (`@SchemaMapping(typeName = "Product", field = "category")`): resolves each product's category through a registered `DataLoader`, so listing 50 products triggers **one** batched category query instead of 50 individual ones
-- [ ] `DataLoaderConfig` updated: `BatchLoaderRegistry.forTypePair(Long.class, Category.class).registerMappedBatchLoader(...)`
-- [ ] Extend `schema.graphqls`: `Product`, `ProductPage`, `ProductInput`
-- [ ] Tests: `HttpGraphQlTester` for queries/mutations, and a dedicated test asserting the `DataLoader` actually batches (assert the number of SQL queries issued for a list of N products stays constant, not proportional to N)
+- [x] `Product` entity, repository, contract/implementation service
+- [x] `ProductController` (`@QueryMapping`/`@MutationMapping`)
+- [x] `ProductCategoryResolver` (`@SchemaMapping(typeName = "Product", field = "category")`): resolves each product's category through a registered `DataLoader`, so listing 50 products triggers **one** batched category query instead of 50 individual ones
+- [x] `DataLoaderConfig` updated: `BatchLoaderRegistry.forTypePair(Long.class, Category.class).registerMappedBatchLoader(...)`
+- [x] Extend `schema.graphqls`: `Product`, `ProductPage`, `ProductInput`
+- [x] Tests: `HttpGraphQlTester` for queries/mutations, and a dedicated test asserting the `DataLoader` actually batches (assert the number of SQL queries issued for a list of N products stays constant, not proportional to N)
 
 ## feature/customers
 
@@ -336,10 +336,10 @@ Depends on `feature/categories` existing, since every product references one.
 
 ### Tasks
 
-- [ ] `Customer` entity, repository, contract/implementation service
-- [ ] `CustomerController`
-- [ ] Extend `schema.graphqls`: `Customer`, `CustomerPage`, `CustomerInput`
-- [ ] Tests
+- [x] `Customer` entity, repository, contract/implementation service
+- [x] `CustomerController`
+- [x] Extend `schema.graphqls`: `Customer`, `CustomerPage`, `CustomerInput`
+- [x] Tests
 
 ## feature/orders
 
@@ -354,12 +354,12 @@ Depends on `feature/categories` existing, since every product references one.
 
 ### Tasks
 
-- [ ] `Order` entity, `OrderRepository`, `OrderService` (interface) + implementation: computes `total = quantity * product.unitPrice`
-- [ ] `OrderController`: `@QueryMapping`/`@MutationMapping` for queries/mutations, `@SubscriptionMapping` returning a `Flux<Order>` for `orderCreated`
-- [ ] `OrderFieldResolver` (`@SchemaMapping` for `Order.customer` and `Order.product`), both batched via `DataLoader`
-- [ ] `Sinks.Many<Order>` bean: `OrderService` emits into it after persisting a new order, `orderCreated`'s `Flux` is `sink.asFlux()`
-- [ ] Extend `schema.graphqls`: `Order`, `OrderPage`, `OrderInput`, and the `orderCreated` field on the `Subscription` type
-- [ ] Tests: `HttpGraphQlTester` for queries/mutations, `WebSocketGraphQlTester` subscribing to `orderCreated` and asserting an event arrives after a `createOrder` mutation, and a `DataLoader` batching test for `Order.customer`/`Order.product` symmetric to the one in `feature/products`
+- [x] `Order` entity, `OrderRepository`, `OrderService` (interface) + implementation: computes `total = quantity * product.unitPrice`
+- [x] `OrderController`: `@QueryMapping`/`@MutationMapping` for queries/mutations, `@SubscriptionMapping` returning a `Flux<Order>` for `orderCreated`
+- [x] `OrderFieldResolver` (`@SchemaMapping` for `Order.customer` and `Order.product`), both batched via `DataLoader`
+- [x] `Sinks.Many<Order>` bean: `OrderService` emits into it after persisting a new order, `orderCreated`'s `Flux` is `sink.asFlux()`
+- [x] Extend `schema.graphqls`: `Order`, `OrderPage`, `OrderInput`, and the `orderCreated` field on the `Subscription` type
+- [x] Tests: `HttpGraphQlTester` for queries/mutations, `WebSocketGraphQlTester` subscribing to `orderCreated` and asserting an event arrives after a `createOrder` mutation, and a `DataLoader` batching test for `Order.customer`/`Order.product` symmetric to the one in `feature/products`
 
 ## Order of work
 
