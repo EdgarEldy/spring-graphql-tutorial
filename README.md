@@ -315,12 +315,12 @@ Depends on `feature/categories` existing, since every product references one.
 
 ### Tasks
 
-- [ ] `Product` entity, repository, contract/implementation service
-- [ ] `ProductController` (`@QueryMapping`/`@MutationMapping`)
-- [ ] `ProductCategoryResolver` (`@SchemaMapping(typeName = "Product", field = "category")`): resolves each product's category through a registered `DataLoader`, so listing 50 products triggers **one** batched category query instead of 50 individual ones
-- [ ] `DataLoaderConfig` updated: `BatchLoaderRegistry.forTypePair(Long.class, Category.class).registerMappedBatchLoader(...)`
-- [ ] Extend `schema.graphqls`: `Product`, `ProductPage`, `ProductInput`
-- [ ] Tests: `HttpGraphQlTester` for queries/mutations, and a dedicated test asserting the `DataLoader` actually batches (assert the number of SQL queries issued for a list of N products stays constant, not proportional to N)
+- [x] `Product` entity, repository, contract/implementation service
+- [x] `ProductController` (`@QueryMapping`/`@MutationMapping`)
+- [x] `ProductCategoryResolver` (`@SchemaMapping(typeName = "Product", field = "category")`): resolves each product's category through a registered `DataLoader`, so listing 50 products triggers **one** batched category query instead of 50 individual ones
+- [x] `DataLoaderConfig` updated: `BatchLoaderRegistry.forTypePair(Long.class, Category.class).registerMappedBatchLoader(...)`
+- [x] Extend `schema.graphqls`: `Product`, `ProductPage`, `ProductInput`
+- [x] Tests: `HttpGraphQlTester` for queries/mutations, and a dedicated test asserting the `DataLoader` actually batches (assert the number of SQL queries issued for a list of N products stays constant, not proportional to N)
 
 ## feature/customers
 
