@@ -15,6 +15,9 @@ type Query {
 
     products(categoryId: ID, page: Int, size: Int): ProductPage!
     product(id: ID!): Product
+
+    customers(page: Int, size: Int): CustomerPage!
+    customer(id: ID!): Customer
 }
 
 type Mutation {
@@ -48,6 +51,10 @@ type Mutation {
     createProduct(input: ProductInput!): Product!
     updateProduct(id: ID!, input: ProductInput!): Product!
     deleteProduct(id: ID!): Boolean!
+
+    createCustomer(input: CustomerInput!): Customer!
+    updateCustomer(id: ID!, input: CustomerInput!): Customer!
+    deleteCustomer(id: ID!): Boolean!
 }
 
 type Subscription {
@@ -159,4 +166,29 @@ input ProductInput {
     productName: String!
     unitPrice: Float!
     categoryId: ID!
+}
+
+type Customer {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    telephone: String!
+    email: String!
+    address: String!
+}
+
+type CustomerPage {
+    content: [Customer!]!
+    totalElements: Int!
+    totalPages: Int!
+    page: Int!
+    size: Int!
+}
+
+input CustomerInput {
+    firstName: String!
+    lastName: String!
+    telephone: String!
+    email: String!
+    address: String!
 }
