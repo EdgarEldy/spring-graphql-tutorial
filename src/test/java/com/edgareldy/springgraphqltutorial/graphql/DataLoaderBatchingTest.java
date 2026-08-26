@@ -16,11 +16,13 @@ import org.springframework.graphql.test.tester.HttpGraphQlTester;
 
 /**
  * End-to-end DataLoader batching tests: resolving User.roles for a page of
- * users, or Role.permissions for the full role list, through the real
- * GraphQL endpoint issues a constant number of SQL queries, not one per
- * parent, which is exactly what CLAUDE.md requires a test for on every
- * relation the DataLoaderConfig batches (userRoles/rolePermissions on this
- * branch). Hibernate Statistics on the running application's
+ * users, Role.permissions for the full role list, or Product.category for a
+ * page of products, through the real GraphQL endpoint issues a constant
+ * number of SQL queries, not one per parent, which is exactly what
+ * CLAUDE.md requires a test for on every relation the DataLoaderConfig
+ * batches (userRoles/rolePermissions on feature/auth, the
+ * forTypePair(Long.class, Category.class) loader added on
+ * feature/products). Hibernate Statistics on the running application's
  * SessionFactory count real SQL statements, the same mechanism used by
  * the repository-level DataLoader tests (UserRepositoryTest,
  * RoleRepositoryTest) so this project has a single query-counting
@@ -166,6 +168,65 @@ class DataLoaderBatchingTest extends GraphQlIntegrationTestSupport {
 				.path("roles[*].permissions[*].resource")
 				.entityList(String.class)
 				.get();
+	}
+
+	private long createProductInCategory(HttpGraphQlTester admin, long categoryId) {
+		return admin.document("""
+				mutation($productName: String!, $categoryId: ID!) {
+				  createProduct(input: { productName: $productName, unitPrice: 9.99, categoryId: $categoryId }) {
+				    id
+				  }
+				}
+				""")
+				.variable("productName", "batch-product-" + UUID.randomUUID())
+				.variable("categoryId", categoryId)
+				.execute()
+				.path("createProduct.id")
+				.entity(Long.class)
+				.get();
+	}
+
+	private List<String> fetchAllProductsWithCategory(HttpGraphQlTester admin) {
+		return admin.document("{ products(size: 5000) { content { category { categoryName } } } }")
+				.execute()
+				.path("products.content[*].category.categoryName")
+				.entityList(String.class)
+				.get();
+	}
+
+	@Test
+	void productCategoryResolvesThroughAConstantNumberOfQueriesRegardlessOfProductCount() {
+		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
+		String categoryName = "batch-category-" + UUID.randomUUID();
+		long categoryId = admin
+				.document("mutation($categoryName: String!) { createCategory(input: { categoryName: $categoryName }) { id } }")
+				.variable("categoryName", categoryName)
+				.execute()
+				.path("createCategory.id")
+				.entity(Long.class)
+				.get();
+
+		for (int i = 0; i < 5; i++) {
+			createProductInCategory(admin, categoryId);
+		}
+
+		Statistics statistics = statistics();
+		statistics.clear();
+		List<String> firstRunCategoryNames = fetchAllProductsWithCategory(admin);
+		long queriesForFirstBatch = statistics.getQueryExecutionCount();
+
+		for (int i = 0; i < 5; i++) {
+			createProductInCategory(admin, categoryId);
+		}
+
+		statistics.clear();
+		List<String> secondRunCategoryNames = fetchAllProductsWithCategory(admin);
+		long queriesForSecondBatch = statistics.getQueryExecutionCount();
+
+		assertThat(firstRunCategoryNames).contains(categoryName);
+		assertThat(secondRunCategoryNames).contains(categoryName);
+		assertThat(queriesForSecondBatch).isEqualTo(queriesForFirstBatch);
+		assertThat(queriesForSecondBatch).isLessThanOrEqualTo(5L);
 	}
 
 }
