@@ -43,7 +43,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void anonymousCallerIsForbidden() {
+	void _01_ShouldReturnForbidden_WhenCallerIsAnonymous() {
 		graphQlTester.document("{ users(page: 0, size: 5) { totalElements } }")
 				.execute()
 				.errors()
@@ -52,7 +52,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void authenticatedNonAdminCallerIsForbidden() {
+	void _02_ShouldReturnForbidden_WhenCallerIsAuthenticatedNonAdmin() {
 		String email = uniqueEmail("non-admin");
 		createEnabledUser(email, "secret-password");
 		String token = login(email, "secret-password");
@@ -66,7 +66,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createUserEnablesTheAccountImmediately() {
+	void _03_ShouldEnableAccountImmediately_WhenAdminCreatesUser() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String email = uniqueEmail("created-by-admin");
 
@@ -79,7 +79,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createUserRejectsDuplicateEmail() {
+	void _04_ShouldRejectUserCreation_WhenEmailIsDuplicate() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String email = uniqueEmail("duplicate-admin-created");
 		createUserAsAdmin(admin, email);
@@ -93,7 +93,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void usersListsCreatedUsers() {
+	void _05_ShouldListCreatedUsers_WhenUsersAreQueried() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String email = uniqueEmail("listed");
 		createUserAsAdmin(admin, email);
@@ -106,7 +106,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void userReturnsDetailById() {
+	void _06_ShouldReturnUserDetail_WhenUserIdExists() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String email = uniqueEmail("detail");
 		long id = createUserAsAdmin(admin, email);
@@ -120,7 +120,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void userReturnsNotFoundForUnknownId() {
+	void _07_ShouldReturnNotFound_WhenUserIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("query($id: ID!) { user(id: $id) { email } }")
@@ -132,7 +132,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateUserChangesProfileFields() {
+	void _08_ShouldChangeProfileFields_WhenUserIsUpdated() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String originalEmail = uniqueEmail("before-update");
 		long id = createUserAsAdmin(admin, originalEmail);
@@ -155,7 +155,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateUserReturnsNotFoundForUnknownId() {
+	void _09_ShouldReturnNotFound_WhenUpdatedUserIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("""
@@ -174,7 +174,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void lockThenUnlockUserRoundTrips() {
+	void _10_ShouldRoundTripLockState_WhenUserIsLockedThenUnlocked() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long id = createUserAsAdmin(admin, uniqueEmail("lockable"));
 
@@ -194,7 +194,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void lockUserReturnsNotFoundForUnknownId() {
+	void _11_ShouldReturnNotFound_WhenLockedUserIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("mutation($id: ID!) { lockUser(id: $id) { accountLocked } }")
@@ -206,7 +206,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteUserRemovesTheAccount() {
+	void _12_ShouldRemoveAccount_WhenUserIsDeleted() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long id = createUserAsAdmin(admin, uniqueEmail("deletable"));
 
@@ -226,7 +226,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteUserReturnsNotFoundForUnknownId() {
+	void _13_ShouldReturnNotFound_WhenDeletedUserIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("mutation($id: ID!) { deleteUser(id: $id) }")
@@ -238,7 +238,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void assignThenRemoveRoleFromUserRoundTrips() {
+	void _14_ShouldRoundTripRoleAssignment_WhenRoleIsAssignedThenRemoved() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long userId = createUserAsAdmin(admin, uniqueEmail("role-assignee"));
 		Role role = roleRepository.save(Role.builder().roleName("REPORTS_VIEWER_" + userId).build());
@@ -261,7 +261,7 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void assignRoleToUserReturnsNotFoundForUnknownRole() {
+	void _15_ShouldReturnNotFound_WhenAssignedRoleIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long userId = createUserAsAdmin(admin, uniqueEmail("role-target"));
 

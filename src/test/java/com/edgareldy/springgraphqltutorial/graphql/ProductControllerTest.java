@@ -55,7 +55,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void productsReturnsAPaginatedListIncludingACreatedProduct() {
+	void _01_ShouldReturnPaginatedListWithCreatedProduct_WhenProductsAreQueried() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 		String productName = uniqueName("clean-code");
@@ -71,7 +71,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void productsFiltersByCategoryId() {
+	void _02_ShouldFilterProducts_WhenCategoryIdIsGiven() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long booksId = createCategoryAsAdmin(admin, uniqueName("books"));
 		long toysId = createCategoryAsAdmin(admin, uniqueName("toys"));
@@ -93,7 +93,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void productReturnsDetailByIdIncludingItsCategory() {
+	void _03_ShouldReturnProductDetailWithCategory_WhenProductIdExists() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String categoryName = uniqueName("books");
 		long categoryId = createCategoryAsAdmin(admin, categoryName);
@@ -112,7 +112,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void productReturnsNotFoundForUnknownId() {
+	void _04_ShouldReturnNotFound_WhenProductIdIsUnknown() {
 		graphQlTester.document("query($id: ID!) { product(id: $id) { productName } }")
 				.variable("id", 999_999_999L)
 				.execute()
@@ -122,7 +122,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createProductAsAdminSucceeds() {
+	void _05_ShouldCreateProduct_WhenCallerIsAdmin() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 		String productName = uniqueName("clean-code");
@@ -147,7 +147,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createProductReturnsNotFoundWhenCategoryIdDoesNotExist() {
+	void _06_ShouldReturnNotFound_WhenCreatedProductCategoryDoesNotExist() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("""
@@ -165,7 +165,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createProductIsForbiddenForNonAdminCaller() {
+	void _07_ShouldReturnForbidden_WhenNonAdminCreatesProduct() {
 		String email = uniqueEmail("non-admin-product");
 		createEnabledUser(email, "secret-password");
 		String token = login(email, "secret-password");
@@ -186,7 +186,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateProductChangesNamePriceAndCategory() {
+	void _08_ShouldChangeNamePriceAndCategory_WhenProductIsUpdated() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long booksId = createCategoryAsAdmin(admin, uniqueName("books"));
 		long toysId = createCategoryAsAdmin(admin, uniqueName("toys"));
@@ -215,7 +215,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateProductReturnsNotFoundForUnknownProductId() {
+	void _09_ShouldReturnNotFound_WhenUpdatedProductIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 
@@ -235,7 +235,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateProductReturnsNotFoundWhenCategoryIdDoesNotExist() {
+	void _10_ShouldReturnNotFound_WhenUpdatedProductCategoryDoesNotExist() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 		long productId = createProductAsAdmin(admin, uniqueName("existing"), 9.99, categoryId);
@@ -255,7 +255,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateProductIsForbiddenForNonAdminCaller() {
+	void _11_ShouldReturnForbidden_WhenNonAdminUpdatesProduct() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 		long productId = createProductAsAdmin(admin, uniqueName("protected"), 9.99, categoryId);
@@ -280,7 +280,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteProductRemovesIt() {
+	void _12_ShouldRemoveProduct_WhenProductIsDeleted() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 		long productId = createProductAsAdmin(admin, uniqueName("deletable"), 9.99, categoryId);
@@ -301,7 +301,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteProductReturnsNotFoundForUnknownId() {
+	void _13_ShouldReturnNotFound_WhenDeletedProductIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("mutation($id: ID!) { deleteProduct(id: $id) }")
@@ -313,7 +313,7 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteProductIsForbiddenForNonAdminCaller() {
+	void _14_ShouldReturnForbidden_WhenNonAdminDeletesProduct() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 		long productId = createProductAsAdmin(admin, uniqueName("protected-delete"), 9.99, categoryId);

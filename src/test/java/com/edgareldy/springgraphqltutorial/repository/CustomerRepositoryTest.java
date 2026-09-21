@@ -41,7 +41,7 @@ class CustomerRepositoryTest {
 	}
 
 	@Test
-	void existsByEmailReflectsPersistedState() {
+	void _01_ShouldReflectPersistedState_WhenCheckingExistenceByEmail() {
 		persistCustomer("jane.doe@example.com");
 
 		assertThat(customerRepository.existsByEmail("jane.doe@example.com")).isTrue();
@@ -49,7 +49,7 @@ class CustomerRepositoryTest {
 	}
 
 	@Test
-	void emailColumnRejectsDuplicates() {
+	void _02_ShouldRejectDuplicate_WhenEmailAlreadyExists() {
 		persistCustomer("jane.doe@example.com");
 
 		assertThatThrownBy(() -> {

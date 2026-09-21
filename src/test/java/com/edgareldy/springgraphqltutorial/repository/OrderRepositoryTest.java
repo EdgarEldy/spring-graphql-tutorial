@@ -70,7 +70,7 @@ class OrderRepositoryTest {
 	}
 
 	@Test
-	void findByCustomerIdReturnsOnlyOrdersOfThatCustomer() {
+	void _01_ShouldReturnOnlyOrdersOfCustomer_WhenFindingByCustomerId() {
 		Customer ada = persistCustomer("ada@example.com");
 		Customer grace = persistCustomer("grace@example.com");
 		Product product = persistProduct("Clean Code", "39.99");
@@ -85,7 +85,7 @@ class OrderRepositoryTest {
 	}
 
 	@Test
-	void findByCustomerIdReturnsAnEmptyPageWhenCustomerHasNoOrder() {
+	void _02_ShouldReturnEmptyPage_WhenCustomerHasNoOrder() {
 		Customer customer = persistCustomer("empty@example.com");
 
 		Page<Order> page = orderRepository.findByCustomerId(customer.getId(), PageRequest.of(0, 20));
@@ -95,7 +95,7 @@ class OrderRepositoryTest {
 	}
 
 	@Test
-	void findAllReturnsOrdersAcrossEveryCustomer() {
+	void _03_ShouldReturnOrdersAcrossEveryCustomer_WhenFindingAll() {
 		Customer ada = persistCustomer("ada2@example.com");
 		Customer grace = persistCustomer("grace2@example.com");
 		Product product = persistProduct("Effective Java", "44.99");
@@ -108,7 +108,7 @@ class OrderRepositoryTest {
 	}
 
 	@Test
-	void customerIdColumnRejectsAReferenceToAnUnknownCustomer() {
+	void _04_ShouldRejectReference_WhenCustomerIdIsUnknown() {
 		Product product = persistProduct("Ghost Book", "9.99");
 		Customer phantom = Customer.builder().id(999_999_999L).firstName("Phantom").lastName("Customer")
 				.telephone("000").email("phantom@example.com").address("Nowhere").build();
@@ -121,7 +121,7 @@ class OrderRepositoryTest {
 	}
 
 	@Test
-	void quantityColumnRejectsAZeroOrNegativeValue() {
+	void _05_ShouldRejectValue_WhenQuantityIsZeroOrNegative() {
 		Customer customer = persistCustomer("negative-quantity@example.com");
 		Product product = persistProduct("Negative Quantity Book", "9.99");
 
@@ -133,7 +133,7 @@ class OrderRepositoryTest {
 	}
 
 	@Test
-	void totalColumnRejectsAZeroOrNegativeValue() {
+	void _06_ShouldRejectValue_WhenTotalIsZeroOrNegative() {
 		Customer customer = persistCustomer("negative-total@example.com");
 		Product product = persistProduct("Negative Total Book", "9.99");
 
@@ -145,7 +145,7 @@ class OrderRepositoryTest {
 	}
 
 	@Test
-	void orderCustomerAndProductAssociationsAreLazyByDefault() {
+	void _07_ShouldLoadAssociationsLazily_WhenOrderIsFetched() {
 		Customer customer = persistCustomer("lazy@example.com");
 		Product product = persistProduct("Lazy Book", "9.99");
 		Order saved = persistOrder(customer, product, 1, "9.99");

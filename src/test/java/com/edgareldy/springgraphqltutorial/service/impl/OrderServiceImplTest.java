@@ -90,7 +90,7 @@ class OrderServiceImplTest {
 	}
 
 	@Test
-	void findAllWithoutCustomerFilterDelegatesToFindAll() {
+	void _01_ShouldDelegateToFindAll_WhenNoCustomerFilterIsGiven() {
 		Order order = order(customer(), product("39.99"));
 		when(orderRepository.findAll(PageRequest.of(0, 20)))
 				.thenReturn(new PageImpl<>(List.of(order), PageRequest.of(0, 20), 1));
@@ -106,7 +106,7 @@ class OrderServiceImplTest {
 	}
 
 	@Test
-	void findAllWithCustomerFilterDelegatesToFindByCustomerId() {
+	void _02_ShouldDelegateToFindByCustomerId_WhenCustomerFilterIsGiven() {
 		Order order = order(customer(), product("39.99"));
 		when(orderRepository.findByCustomerId(1L, PageRequest.of(0, 20)))
 				.thenReturn(new PageImpl<>(List.of(order), PageRequest.of(0, 20), 1));
@@ -118,7 +118,7 @@ class OrderServiceImplTest {
 	}
 
 	@Test
-	void findByIdReturnsOrder() {
+	void _03_ShouldReturnOrder_WhenOrderExists() {
 		Order order = order(customer(), product("39.99"));
 		when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
 
@@ -126,14 +126,14 @@ class OrderServiceImplTest {
 	}
 
 	@Test
-	void findByIdThrowsWhenOrderMissing() {
+	void _04_ShouldThrowNotFound_WhenOrderIsMissing() {
 		when(orderRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> orderService.findById(99L)).isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
-	void createComputesTotalFromQuantityAndUnitPriceThenSaves() {
+	void _05_ShouldComputeTotalThenSave_WhenOrderIsCreated() {
 		Customer customer = customer();
 		Product product = product("19.99");
 		OrderInput input = new OrderInput(1L, 1L, 3);
@@ -150,7 +150,7 @@ class OrderServiceImplTest {
 	}
 
 	@Test
-	void createThrowsWhenCustomerMissing() {
+	void _06_ShouldThrowNotFound_WhenOrderCustomerIsMissing() {
 		OrderInput input = new OrderInput(99L, 1L, 1);
 		when(customerRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -161,7 +161,7 @@ class OrderServiceImplTest {
 	}
 
 	@Test
-	void createThrowsWhenProductMissing() {
+	void _07_ShouldThrowNotFound_WhenOrderProductIsMissing() {
 		OrderInput input = new OrderInput(1L, 99L, 1);
 		when(customerRepository.findById(1L)).thenReturn(Optional.of(customer()));
 		when(productRepository.findById(99L)).thenReturn(Optional.empty());
@@ -172,7 +172,7 @@ class OrderServiceImplTest {
 	}
 
 	@Test
-	void createEmitsTheSavedOrderIntoTheSink() {
+	void _08_ShouldEmitSavedOrderIntoSink_WhenOrderIsCreated() {
 		Customer customer = customer();
 		Product product = product("19.99");
 		OrderInput input = new OrderInput(1L, 1L, 2);
@@ -190,7 +190,7 @@ class OrderServiceImplTest {
 	}
 
 	@Test
-	void createDoesNotFailWhenNoSubscriberIsListening() {
+	void _09_ShouldNotFail_WhenNoSubscriberIsListening() {
 		Customer customer = customer();
 		Product product = product("19.99");
 		OrderInput input = new OrderInput(1L, 1L, 1);

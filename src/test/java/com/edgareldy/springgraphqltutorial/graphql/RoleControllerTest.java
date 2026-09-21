@@ -56,7 +56,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void authenticatedNonAdminCallerIsForbidden() {
+	void _01_ShouldReturnForbidden_WhenCallerIsAuthenticatedNonAdmin() {
 		String email = uniqueEmail("non-admin-role");
 		createEnabledUser(email, "secret-password");
 		String token = login(email, "secret-password");
@@ -69,7 +69,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createRoleThenListingRolesIncludesIt() {
+	void _02_ShouldListCreatedRole_WhenRoleIsCreated() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String roleName = uniqueRoleName("viewer");
 		createRoleAsAdmin(admin, roleName);
@@ -82,7 +82,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createRoleRejectsDuplicateName() {
+	void _03_ShouldRejectRoleCreation_WhenNameIsDuplicate() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String roleName = uniqueRoleName("duplicate");
 		createRoleAsAdmin(admin, roleName);
@@ -96,7 +96,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void roleReturnsDetailById() {
+	void _04_ShouldReturnRoleDetail_WhenRoleIdExists() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String roleName = uniqueRoleName("detail");
 		long id = createRoleAsAdmin(admin, roleName);
@@ -110,7 +110,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void roleReturnsNotFoundForUnknownId() {
+	void _05_ShouldReturnNotFound_WhenRoleIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("query($id: ID!) { role(id: $id) { roleName } }")
@@ -122,7 +122,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateRoleChangesTheName() {
+	void _06_ShouldChangeRoleName_WhenRoleIsUpdated() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long id = createRoleAsAdmin(admin, uniqueRoleName("before-update"));
 		String newName = uniqueRoleName("after-update");
@@ -137,7 +137,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateRoleReturnsNotFoundForUnknownId() {
+	void _07_ShouldReturnNotFound_WhenUpdatedRoleIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("mutation($id: ID!, $roleName: String!) { updateRole(id: $id, input: { roleName: $roleName }) { roleName } }")
@@ -150,7 +150,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteRoleRemovesIt() {
+	void _08_ShouldRemoveRole_WhenRoleIsDeleted() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long id = createRoleAsAdmin(admin, uniqueRoleName("deletable"));
 
@@ -170,7 +170,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteRoleReturnsNotFoundForUnknownId() {
+	void _09_ShouldReturnNotFound_WhenDeletedRoleIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("mutation($id: ID!) { deleteRole(id: $id) }")
@@ -182,7 +182,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createPermissionThenListingPermissionsIncludesIt() {
+	void _10_ShouldListCreatedPermission_WhenPermissionIsCreated() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String resource = "resource-" + UUID.randomUUID();
 		createPermissionAsAdmin(admin, resource, "read");
@@ -195,7 +195,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createPermissionRejectsDuplicateResourceActionPair() {
+	void _11_ShouldRejectPermissionCreation_WhenResourceActionPairIsDuplicate() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String resource = "resource-" + UUID.randomUUID();
 		createPermissionAsAdmin(admin, resource, "delete");
@@ -214,7 +214,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deletePermissionRemovesIt() {
+	void _12_ShouldRemovePermission_WhenPermissionIsDeleted() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String resource = "resource-" + UUID.randomUUID();
 		long id = createPermissionAsAdmin(admin, resource, "read");
@@ -228,7 +228,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deletePermissionReturnsNotFoundForUnknownId() {
+	void _13_ShouldReturnNotFound_WhenDeletedPermissionIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("mutation($id: ID!) { deletePermission(id: $id) }")
@@ -240,7 +240,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void assignThenRemovePermissionFromRoleRoundTrips() {
+	void _14_ShouldRoundTripPermissionAssignment_WhenPermissionIsAssignedThenRemoved() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long roleId = createRoleAsAdmin(admin, uniqueRoleName("permission-holder"));
 		String resource = "resource-" + UUID.randomUUID();
@@ -264,7 +264,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void assignPermissionToRoleReturnsNotFoundForUnknownPermission() {
+	void _15_ShouldReturnNotFound_WhenAssignedPermissionIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long roleId = createRoleAsAdmin(admin, uniqueRoleName("permission-target"));
 
@@ -286,7 +286,7 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 	 * repository state directly.
 	 */
 	@Test
-	void fullAdministrationFlowCreatesRolePermissionAndUserThenWiresThemTogether() {
+	void _16_ShouldWireRolePermissionAndUser_WhenFullAdministrationFlowIsRun() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		String roleName = uniqueRoleName("editor");
