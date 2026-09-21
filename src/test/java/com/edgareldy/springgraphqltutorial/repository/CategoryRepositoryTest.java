@@ -51,7 +51,7 @@ class CategoryRepositoryTest {
 	}
 
 	@Test
-	void existsByCategoryNameReflectsPersistedState() {
+	void _01_ShouldReflectPersistedState_WhenCheckingExistenceByCategoryName() {
 		persistCategory("Books");
 
 		assertThat(categoryRepository.existsByCategoryName("Books")).isTrue();
@@ -59,7 +59,7 @@ class CategoryRepositoryTest {
 	}
 
 	@Test
-	void categoryNameColumnRejectsDuplicates() {
+	void _02_ShouldRejectDuplicate_WhenCategoryNameAlreadyExists() {
 		persistCategory("Books");
 
 		assertThatThrownBy(() -> {
@@ -69,14 +69,14 @@ class CategoryRepositoryTest {
 	}
 
 	@Test
-	void countProductsByCategoryIdReturnsZeroWhenNoProductReferencesTheCategory() {
+	void _03_ShouldReturnZero_WhenNoProductReferencesTheCategory() {
 		Category category = persistCategory("Empty Category");
 
 		assertThat(categoryRepository.countProductsByCategoryId(category.getId())).isZero();
 	}
 
 	@Test
-	void countProductsByCategoryIdCountsOnlyProductsReferencingThatCategory() {
+	void _04_ShouldCountOnlyReferencingProducts_WhenCountingProductsByCategoryId() {
 		Category books = persistCategory("Books");
 		Category toys = persistCategory("Toys");
 		insertProduct(books.getId(), "Clean Code");

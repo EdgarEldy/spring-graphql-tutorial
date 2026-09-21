@@ -63,7 +63,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void categoriesReturnsAPaginatedListIncludingACreatedCategory() {
+	void _01_ShouldReturnPaginatedListWithCreatedCategory_WhenCategoriesAreQueried() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String categoryName = uniqueCategoryName("books");
 		createCategoryAsAdmin(admin, categoryName);
@@ -78,7 +78,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void categoryReturnsDetailById() {
+	void _02_ShouldReturnCategoryDetail_WhenCategoryIdExists() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String categoryName = uniqueCategoryName("detail");
 		long id = createCategoryAsAdmin(admin, categoryName);
@@ -92,7 +92,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void categoryReturnsNotFoundForUnknownId() {
+	void _03_ShouldReturnNotFound_WhenCategoryIdIsUnknown() {
 		graphQlTester.document("query($id: ID!) { category(id: $id) { categoryName } }")
 				.variable("id", 999_999_999L)
 				.execute()
@@ -102,7 +102,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createCategoryAsAdminSucceeds() {
+	void _04_ShouldCreateCategory_WhenCallerIsAdmin() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String categoryName = uniqueCategoryName("new-category");
 
@@ -115,7 +115,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createCategoryRejectsDuplicateName() {
+	void _05_ShouldRejectCategoryCreation_WhenNameIsDuplicate() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String categoryName = uniqueCategoryName("duplicate");
 		createCategoryAsAdmin(admin, categoryName);
@@ -129,7 +129,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createCategoryIsForbiddenForNonAdminCaller() {
+	void _06_ShouldReturnForbidden_WhenNonAdminCreatesCategory() {
 		String email = uniqueEmail("non-admin-category");
 		createEnabledUser(email, "secret-password");
 		String token = login(email, "secret-password");
@@ -144,7 +144,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateCategoryChangesTheName() {
+	void _07_ShouldChangeCategoryName_WhenCategoryIsUpdated() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long id = createCategoryAsAdmin(admin, uniqueCategoryName("before-update"));
 		String newName = uniqueCategoryName("after-update");
@@ -159,7 +159,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateCategoryReturnsNotFoundForUnknownId() {
+	void _08_ShouldReturnNotFound_WhenUpdatedCategoryIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("mutation($id: ID!, $categoryName: String!) { updateCategory(id: $id, input: { categoryName: $categoryName }) { categoryName } }")
@@ -172,7 +172,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateCategoryRejectsNameAlreadyUsedByAnotherCategory() {
+	void _09_ShouldRejectUpdate_WhenNameIsUsedByAnotherCategory() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String takenName = uniqueCategoryName("taken");
 		createCategoryAsAdmin(admin, takenName);
@@ -188,7 +188,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteCategoryRemovesIt() {
+	void _10_ShouldRemoveCategory_WhenCategoryIsDeleted() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long id = createCategoryAsAdmin(admin, uniqueCategoryName("deletable"));
 
@@ -208,7 +208,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteCategoryReturnsNotFoundForUnknownId() {
+	void _11_ShouldReturnNotFound_WhenDeletedCategoryIdIsUnknown() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 
 		admin.document("mutation($id: ID!) { deleteCategory(id: $id) }")
@@ -220,7 +220,7 @@ class CategoryControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteCategoryIsRejectedWhenItStillHasProducts() {
+	void _12_ShouldRejectDeletion_WhenCategoryStillHasProducts() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long id = createCategoryAsAdmin(admin, uniqueCategoryName("still-has-products"));
 		insertProductReferencingCategory(id, "Product-" + UUID.randomUUID());
