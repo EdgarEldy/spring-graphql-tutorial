@@ -63,7 +63,7 @@ class CustomerServiceImplTest {
 	}
 
 	@Test
-	void findAllReturnsAPageBuiltFromTheRepositoryPage() {
+	void _01_ShouldReturnPageBuiltFromRepositoryPage_WhenAllCustomersAreRequested() {
 		Customer customer = sampleCustomer(1L);
 		when(customerRepository.findAll(PageRequest.of(0, 20)))
 				.thenReturn(new PageImpl<>(List.of(customer), PageRequest.of(0, 20), 1));
@@ -78,7 +78,7 @@ class CustomerServiceImplTest {
 	}
 
 	@Test
-	void findByIdReturnsCustomer() {
+	void _02_ShouldReturnCustomer_WhenCustomerExists() {
 		Customer customer = sampleCustomer(1L);
 		when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
 
@@ -86,14 +86,14 @@ class CustomerServiceImplTest {
 	}
 
 	@Test
-	void findByIdThrowsWhenCustomerMissing() {
+	void _03_ShouldThrowNotFound_WhenCustomerIsMissing() {
 		when(customerRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> customerService.findById(99L)).isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
-	void createSavesNewCustomer() {
+	void _04_ShouldSaveCustomer_WhenCustomerIsNew() {
 		CustomerInput input = sampleInput();
 		when(customerRepository.existsByEmail(input.email())).thenReturn(false);
 		when(customerRepository.save(any(Customer.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -108,7 +108,7 @@ class CustomerServiceImplTest {
 	}
 
 	@Test
-	void createRejectsDuplicateEmail() {
+	void _05_ShouldRejectCreation_WhenEmailIsDuplicate() {
 		CustomerInput input = sampleInput();
 		when(customerRepository.existsByEmail(input.email())).thenReturn(true);
 
@@ -118,7 +118,7 @@ class CustomerServiceImplTest {
 	}
 
 	@Test
-	void updateChangesCustomerFields() {
+	void _06_ShouldChangeFields_WhenCustomerIsUpdated() {
 		Customer customer = sampleCustomer(1L);
 		CustomerInput input = new CustomerInput("Janet", "Doe", "555-0199", "janet.doe@example.com", "2 Elm Street");
 		when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
@@ -134,7 +134,7 @@ class CustomerServiceImplTest {
 	}
 
 	@Test
-	void updateThrowsWhenCustomerMissing() {
+	void _07_ShouldThrowNotFound_WhenUpdatedCustomerIsMissing() {
 		CustomerInput input = sampleInput();
 		when(customerRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -142,7 +142,7 @@ class CustomerServiceImplTest {
 	}
 
 	@Test
-	void updateRejectsEmailAlreadyUsedByAnotherCustomer() {
+	void _08_ShouldRejectUpdate_WhenEmailIsUsedByAnotherCustomer() {
 		Customer customer = sampleCustomer(1L);
 		CustomerInput input = new CustomerInput("Jane", "Doe", "555-0100", "taken@example.com", "1 Main Street");
 		when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
@@ -154,7 +154,7 @@ class CustomerServiceImplTest {
 	}
 
 	@Test
-	void updateAllowsKeepingTheSameEmailUnchanged() {
+	void _09_ShouldAllowUpdate_WhenEmailIsKeptUnchanged() {
 		Customer customer = sampleCustomer(1L);
 		CustomerInput input = sampleInput();
 		when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
@@ -167,7 +167,7 @@ class CustomerServiceImplTest {
 	}
 
 	@Test
-	void deleteRemovesCustomer() {
+	void _10_ShouldRemoveCustomer_WhenCustomerExists() {
 		Customer customer = sampleCustomer(1L);
 		when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
 
@@ -177,7 +177,7 @@ class CustomerServiceImplTest {
 	}
 
 	@Test
-	void deleteThrowsWhenCustomerMissing() {
+	void _11_ShouldThrowNotFound_WhenDeletedCustomerIsMissing() {
 		when(customerRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> customerService.delete(99L)).isInstanceOf(ResourceNotFoundException.class);
