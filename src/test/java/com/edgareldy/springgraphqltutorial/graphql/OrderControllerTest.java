@@ -88,7 +88,7 @@ class OrderControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createOrderComputesTotalFromQuantityAndProductUnitPrice() {
+	void _01_ShouldComputeTotalFromQuantityAndUnitPrice_WhenOrderIsCreated() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 		long productId = createProductAsAdmin(admin, uniqueName("clean-code"), 19.99, categoryId);
@@ -116,7 +116,7 @@ class OrderControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createOrderReturnsNotFoundWhenCustomerIdDoesNotExist() {
+	void _02_ShouldReturnNotFound_WhenOrderCustomerDoesNotExist() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 		long productId = createProductAsAdmin(admin, uniqueName("orphan-customer"), 9.99, categoryId);
@@ -136,7 +136,7 @@ class OrderControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createOrderReturnsNotFoundWhenProductIdDoesNotExist() {
+	void _03_ShouldReturnNotFound_WhenOrderProductDoesNotExist() {
 		long customerId = createCustomer(uniqueEmail("order-orphan-product"));
 
 		graphQlTester.document("""
@@ -154,7 +154,7 @@ class OrderControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void orderReturnsDetailByIdIncludingCustomerAndProduct() {
+	void _04_ShouldReturnOrderDetailWithCustomerAndProduct_WhenOrderIdExists() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 		long productId = createProductAsAdmin(admin, uniqueName("effective-java"), 44.99, categoryId);
@@ -174,7 +174,7 @@ class OrderControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void orderReturnsNotFoundForUnknownId() {
+	void _05_ShouldReturnNotFound_WhenOrderIdIsUnknown() {
 		graphQlTester.document("query($id: ID!) { order(id: $id) { id } }")
 				.variable("id", 999_999_999L)
 				.execute()
@@ -184,7 +184,7 @@ class OrderControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void ordersReturnsAPaginatedListIncludingACreatedOrder() {
+	void _06_ShouldReturnPaginatedListWithCreatedOrder_WhenOrdersAreQueried() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 		long productId = createProductAsAdmin(admin, uniqueName("paginated-book"), 9.99, categoryId);
@@ -201,7 +201,7 @@ class OrderControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void ordersFiltersByCustomerId() {
+	void _07_ShouldFilterOrders_WhenCustomerIdIsGiven() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
 		long productId = createProductAsAdmin(admin, uniqueName("filter-book"), 9.99, categoryId);
