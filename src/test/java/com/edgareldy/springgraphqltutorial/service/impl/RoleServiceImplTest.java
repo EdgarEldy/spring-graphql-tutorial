@@ -53,7 +53,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void findAllReturnsEveryRole() {
+	void _01_ShouldReturnEveryRole_WhenAllRolesAreRequested() {
 		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(Set.of()).build();
 		when(roleRepository.findAll()).thenReturn(List.of(role));
 
@@ -61,7 +61,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void findByIdReturnsRole() {
+	void _02_ShouldReturnRole_WhenRoleExists() {
 		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(Set.of()).build();
 		when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
 
@@ -69,14 +69,14 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void findByIdThrowsWhenRoleMissing() {
+	void _03_ShouldThrowNotFound_WhenRoleIsMissing() {
 		when(roleRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> roleService.findById(99L)).isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
-	void createSavesNewRole() {
+	void _04_ShouldSaveRole_WhenRoleIsNew() {
 		RoleInput input = new RoleInput("ADMIN");
 		when(roleRepository.existsByRoleName("ADMIN")).thenReturn(false);
 		when(roleRepository.save(any(Role.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -87,7 +87,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void createRejectsDuplicateRoleName() {
+	void _05_ShouldRejectCreation_WhenRoleNameIsDuplicate() {
 		RoleInput input = new RoleInput("ADMIN");
 		when(roleRepository.existsByRoleName("ADMIN")).thenReturn(true);
 
@@ -97,7 +97,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void updateChangesRoleName() {
+	void _06_ShouldChangeRoleName_WhenRoleIsUpdated() {
 		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(Set.of()).build();
 		RoleInput input = new RoleInput("SUPER_ADMIN");
 		when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
@@ -109,7 +109,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void updateThrowsWhenRoleMissing() {
+	void _07_ShouldThrowNotFound_WhenUpdatedRoleIsMissing() {
 		RoleInput input = new RoleInput("SUPER_ADMIN");
 		when(roleRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -117,7 +117,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void deleteRemovesRole() {
+	void _08_ShouldRemoveRole_WhenRoleExists() {
 		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(Set.of()).build();
 		when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
 
@@ -127,7 +127,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void deleteThrowsWhenRoleMissing() {
+	void _09_ShouldThrowNotFound_WhenDeletedRoleIsMissing() {
 		when(roleRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> roleService.delete(99L)).isInstanceOf(ResourceNotFoundException.class);
@@ -136,7 +136,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void assignPermissionToRoleAddsPermissionToRolePermissionSet() {
+	void _10_ShouldAddPermissionToRole_WhenPermissionIsAssigned() {
 		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(new HashSet<>()).build();
 		Permission permission = Permission.builder().id(2L).resource("product").action("delete").build();
 		when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
@@ -149,7 +149,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void assignPermissionToRoleThrowsWhenRoleMissing() {
+	void _11_ShouldThrowNotFound_WhenAssignmentRoleIsMissing() {
 		when(roleRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> roleService.assignPermissionToRole(99L, 2L))
@@ -157,7 +157,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void assignPermissionToRoleThrowsWhenPermissionMissing() {
+	void _12_ShouldThrowNotFound_WhenAssignmentPermissionIsMissing() {
 		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(new HashSet<>()).build();
 		when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
 		when(permissionRepository.findById(99L)).thenReturn(Optional.empty());
@@ -167,7 +167,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void removePermissionFromRoleRemovesPermissionFromRolePermissionSet() {
+	void _13_ShouldRemovePermissionFromRole_WhenPermissionIsRemoved() {
 		Permission permission = Permission.builder().id(2L).resource("product").action("delete").build();
 		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(new java.util.HashSet<>(Set.of(permission)))
 				.build();
@@ -181,7 +181,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void removePermissionFromRoleThrowsWhenRoleMissing() {
+	void _14_ShouldThrowNotFound_WhenRemovalRoleIsMissing() {
 		when(roleRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> roleService.removePermissionFromRole(99L, 2L))
@@ -189,7 +189,7 @@ class RoleServiceImplTest {
 	}
 
 	@Test
-	void removePermissionFromRoleThrowsWhenPermissionMissing() {
+	void _15_ShouldThrowNotFound_WhenRemovalPermissionIsMissing() {
 		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(new HashSet<>()).build();
 		when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
 		when(permissionRepository.findById(99L)).thenReturn(Optional.empty());

@@ -98,7 +98,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void registerCreatesDisabledUserAndActivationToken() {
+	void _01_ShouldCreateDisabledUserAndActivationToken_WhenUserRegisters() {
 		RegisterInput input = new RegisterInput("Ada", "Lovelace", "ada@example.com", "secret");
 		when(userRepository.existsByEmail("ada@example.com")).thenReturn(false);
 		when(passwordEncoder.encode("secret")).thenReturn("encoded-password");
@@ -113,7 +113,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void registerRejectsDuplicateEmail() {
+	void _02_ShouldRejectRegistration_WhenEmailIsDuplicate() {
 		RegisterInput input = new RegisterInput("Ada", "Lovelace", "ada@example.com", "secret");
 		when(userRepository.existsByEmail("ada@example.com")).thenReturn(true);
 
@@ -123,7 +123,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void activateAccountEnablesUserAndMarksTokenValidated() {
+	void _03_ShouldEnableUserAndValidateToken_WhenAccountIsActivated() {
 		User user = buildUser();
 		user.setEnabled(false);
 		ActivationToken token = ActivationToken.builder()
@@ -145,7 +145,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void activateAccountRejectsUnknownToken() {
+	void _04_ShouldRejectActivation_WhenTokenIsUnknown() {
 		when(activationTokenRepository.findByToken("missing")).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> userService.activateAccount("missing"))
@@ -153,7 +153,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void activateAccountRejectsAlreadyUsedToken() {
+	void _05_ShouldRejectActivation_WhenTokenIsAlreadyUsed() {
 		ActivationToken token = ActivationToken.builder()
 				.id(10L)
 				.user(buildUser())
@@ -168,7 +168,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void activateAccountRejectsExpiredToken() {
+	void _06_ShouldRejectActivation_WhenTokenIsExpired() {
 		ActivationToken token = ActivationToken.builder()
 				.id(10L)
 				.user(buildUser())
@@ -182,7 +182,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void loginReturnsTokenForValidCredentials() {
+	void _07_ShouldReturnToken_WhenCredentialsAreValid() {
 		User user = buildUser();
 		LoginInput input = new LoginInput("ada@example.com", "secret");
 		when(userRepository.findByEmail("ada@example.com")).thenReturn(Optional.of(user));
@@ -196,7 +196,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void loginRejectsUnknownEmail() {
+	void _08_ShouldRejectLogin_WhenEmailIsUnknown() {
 		LoginInput input = new LoginInput("missing@example.com", "secret");
 		when(userRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
 
@@ -204,7 +204,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void loginRejectsWrongPassword() {
+	void _09_ShouldRejectLogin_WhenPasswordIsWrong() {
 		User user = buildUser();
 		LoginInput input = new LoginInput("ada@example.com", "wrong");
 		when(userRepository.findByEmail("ada@example.com")).thenReturn(Optional.of(user));
@@ -214,7 +214,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void loginRejectsDisabledAccount() {
+	void _10_ShouldRejectLogin_WhenAccountIsDisabled() {
 		User user = buildUser();
 		user.setEnabled(false);
 		LoginInput input = new LoginInput("ada@example.com", "secret");
@@ -225,7 +225,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void loginRejectsLockedAccount() {
+	void _11_ShouldRejectLogin_WhenAccountIsLocked() {
 		User user = buildUser();
 		user.setAccountLocked(true);
 		LoginInput input = new LoginInput("ada@example.com", "secret");
@@ -236,7 +236,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void logoutBlacklistsTokenOnFirstCall() {
+	void _12_ShouldBlacklistToken_WhenLogoutIsCalledFirstTime() {
 		User user = buildUser();
 		String rawToken = "raw-jwt";
 		when(jwtService.extractJti(rawToken)).thenReturn("jti-1");
@@ -256,7 +256,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void logoutIsIdempotentForAlreadyBlacklistedToken() {
+	void _13_ShouldStayIdempotent_WhenTokenIsAlreadyBlacklisted() {
 		String rawToken = "raw-jwt";
 		when(jwtService.extractJti(rawToken)).thenReturn("jti-1");
 		when(blacklistedTokenRepository.existsByJti("jti-1")).thenReturn(true);
@@ -268,7 +268,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void requestPasswordResetCreatesTokenForExistingUser() {
+	void _14_ShouldCreateResetToken_WhenUserExists() {
 		User user = buildUser();
 		when(userRepository.findByEmail("ada@example.com")).thenReturn(Optional.of(user));
 
@@ -279,7 +279,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void requestPasswordResetReturnsFalseForUnknownEmail() {
+	void _15_ShouldReturnFalse_WhenPasswordResetEmailIsUnknown() {
 		when(userRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
 
 		boolean result = userService.requestPasswordReset("missing@example.com");
@@ -289,7 +289,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void resetPasswordUpdatesPasswordAndConsumesToken() {
+	void _16_ShouldUpdatePasswordAndConsumeToken_WhenPasswordIsReset() {
 		User user = buildUser();
 		PasswordResetToken resetToken = PasswordResetToken.builder()
 				.id(5L)
@@ -310,7 +310,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void resetPasswordRejectsUnknownToken() {
+	void _17_ShouldRejectPasswordReset_WhenTokenIsUnknown() {
 		when(passwordResetTokenRepository.findByToken("missing")).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> userService.resetPassword("missing", "new-secret"))
@@ -318,7 +318,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void resetPasswordRejectsExpiredToken() {
+	void _18_ShouldRejectPasswordReset_WhenTokenIsExpired() {
 		PasswordResetToken resetToken = PasswordResetToken.builder()
 				.id(5L)
 				.user(buildUser())
@@ -333,7 +333,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void findByEmailReturnsUser() {
+	void _19_ShouldReturnUser_WhenFindingByEmail() {
 		User user = buildUser();
 		when(userRepository.findByEmail("ada@example.com")).thenReturn(Optional.of(user));
 
@@ -341,7 +341,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void findByEmailThrowsWhenMissing() {
+	void _20_ShouldThrowNotFound_WhenEmailIsMissing() {
 		when(userRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> userService.findByEmail("missing@example.com"))
@@ -349,7 +349,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void findAllBuildsUserPageFromSpringDataPage() {
+	void _21_ShouldBuildUserPage_WhenSpringDataPageIsReturned() {
 		User user = buildUser();
 		Page<User> page = new PageImpl<>(List.of(user), PageRequest.of(0, 20), 1);
 		when(userRepository.findAll(PageRequest.of(0, 20))).thenReturn(page);
@@ -364,7 +364,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void findByIdReturnsUser() {
+	void _22_ShouldReturnUser_WhenUserExists() {
 		User user = buildUser();
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
@@ -372,14 +372,14 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void findByIdThrowsWhenMissing() {
+	void _23_ShouldThrowNotFound_WhenUserIsMissing() {
 		when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> userService.findById(99L)).isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
-	void createEnablesUserImmediately() {
+	void _24_ShouldEnableUserImmediately_WhenUserIsCreated() {
 		CreateUserInput input = new CreateUserInput("Grace", "Hopper", "grace@example.com", "secret");
 		when(userRepository.existsByEmail("grace@example.com")).thenReturn(false);
 		when(passwordEncoder.encode("secret")).thenReturn("encoded");
@@ -393,7 +393,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void createRejectsDuplicateEmail() {
+	void _25_ShouldRejectCreation_WhenEmailIsDuplicate() {
 		CreateUserInput input = new CreateUserInput("Grace", "Hopper", "grace@example.com", "secret");
 		when(userRepository.existsByEmail("grace@example.com")).thenReturn(true);
 
@@ -403,7 +403,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void updateChangesProfileFields() {
+	void _26_ShouldChangeProfileFields_WhenUserIsUpdated() {
 		User user = buildUser();
 		UpdateUserInput input = new UpdateUserInput("Augusta", "King", "augusta@example.com");
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
@@ -417,7 +417,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void updateThrowsWhenUserMissing() {
+	void _27_ShouldThrowNotFound_WhenUpdatedUserIsMissing() {
 		UpdateUserInput input = new UpdateUserInput("Augusta", "King", "augusta@example.com");
 		when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -425,7 +425,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void lockSetsAccountLockedTrue() {
+	void _28_ShouldSetAccountLocked_WhenUserIsLocked() {
 		User user = buildUser();
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 		when(userRepository.save(user)).thenReturn(user);
@@ -436,14 +436,14 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void lockThrowsWhenUserMissing() {
+	void _29_ShouldThrowNotFound_WhenLockedUserIsMissing() {
 		when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> userService.lock(99L)).isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
-	void unlockSetsAccountLockedFalse() {
+	void _30_ShouldClearAccountLocked_WhenUserIsUnlocked() {
 		User user = buildUser();
 		user.setAccountLocked(true);
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
@@ -455,14 +455,14 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void unlockThrowsWhenUserMissing() {
+	void _31_ShouldThrowNotFound_WhenUnlockedUserIsMissing() {
 		when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> userService.unlock(99L)).isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
-	void deleteRemovesUser() {
+	void _32_ShouldRemoveUser_WhenUserExists() {
 		User user = buildUser();
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
@@ -472,7 +472,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void deleteThrowsWhenUserMissing() {
+	void _33_ShouldThrowNotFound_WhenDeletedUserIsMissing() {
 		when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> userService.delete(99L)).isInstanceOf(ResourceNotFoundException.class);
@@ -481,7 +481,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void assignRoleToUserAddsRoleToUserRoleSet() {
+	void _34_ShouldAddRoleToUser_WhenRoleIsAssigned() {
 		User user = buildUser();
 		Role role = Role.builder().id(2L).roleName("ADMIN").permissions(Set.of()).build();
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
@@ -494,7 +494,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void assignRoleToUserThrowsWhenUserMissing() {
+	void _35_ShouldThrowNotFound_WhenAssignmentUserIsMissing() {
 		when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> userService.assignRoleToUser(99L, 2L))
@@ -502,7 +502,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void assignRoleToUserThrowsWhenRoleMissing() {
+	void _36_ShouldThrowNotFound_WhenAssignmentRoleIsMissing() {
 		User user = buildUser();
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 		when(roleRepository.findById(99L)).thenReturn(Optional.empty());
@@ -512,7 +512,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void removeRoleFromUserRemovesRoleFromUserRoleSet() {
+	void _37_ShouldRemoveRoleFromUser_WhenRoleIsRemoved() {
 		Role role = Role.builder().id(2L).roleName("ADMIN").permissions(Set.of()).build();
 		User user = buildUser();
 		user.getRoles().add(role);
@@ -526,7 +526,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void removeRoleFromUserThrowsWhenUserMissing() {
+	void _38_ShouldThrowNotFound_WhenRemovalUserIsMissing() {
 		when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> userService.removeRoleFromUser(99L, 2L))
@@ -534,7 +534,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void removeRoleFromUserThrowsWhenRoleMissing() {
+	void _39_ShouldThrowNotFound_WhenRemovalRoleIsMissing() {
 		User user = buildUser();
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 		when(roleRepository.findById(99L)).thenReturn(Optional.empty());

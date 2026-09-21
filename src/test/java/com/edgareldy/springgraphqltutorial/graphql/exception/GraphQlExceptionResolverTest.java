@@ -61,7 +61,7 @@ class GraphQlExceptionResolverTest {
 	}
 
 	@Test
-	void resolveExceptionMapsResourceNotFoundExceptionToNotFound() {
+	void _01_ShouldMapToNotFound_WhenResourceNotFoundExceptionIsResolved() {
 		ResourceNotFoundException exception = new ResourceNotFoundException("Category with id 42 was not found");
 
 		GraphQLError error = resolveSingleError(exception);
@@ -71,7 +71,7 @@ class GraphQlExceptionResolverTest {
 	}
 
 	@Test
-	void resolveExceptionMapsBusinessRuleExceptionToBadRequest() {
+	void _02_ShouldMapToBadRequest_WhenBusinessRuleExceptionIsResolved() {
 		BusinessRuleException exception = new BusinessRuleException("Category still has products, it cannot be deleted");
 
 		GraphQLError error = resolveSingleError(exception);
@@ -81,7 +81,7 @@ class GraphQlExceptionResolverTest {
 	}
 
 	@Test
-	void resolveExceptionMapsAccessDeniedExceptionToForbidden() {
+	void _03_ShouldMapToForbidden_WhenAccessDeniedExceptionIsResolved() {
 		AccessDeniedException exception = new AccessDeniedException("Access is denied");
 
 		GraphQLError error = resolveSingleError(exception);
@@ -91,7 +91,7 @@ class GraphQlExceptionResolverTest {
 	}
 
 	@Test
-	void resolveExceptionMapsUnrecognizedExceptionToInternalErrorWithGenericMessage() {
+	void _04_ShouldMapToInternalErrorWithGenericMessage_WhenUnrecognizedExceptionIsResolved() {
 		IllegalStateException exception = new IllegalStateException("Column customers.email does not exist");
 
 		GraphQLError error = resolveSingleError(exception);

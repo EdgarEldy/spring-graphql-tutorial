@@ -67,7 +67,7 @@ class DataLoaderBatchingTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void userRolesResolvesThroughAConstantNumberOfQueriesRegardlessOfUserCount() {
+	void _01_ShouldIssueConstantNumberOfQueries_WhenUserRolesAreResolvedForManyUsers() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		Role role = roleRepository
 				.save(Role.builder().roleName("BATCH_ROLE_" + UUID.randomUUID().toString().substring(0, 8)).build());
@@ -122,7 +122,7 @@ class DataLoaderBatchingTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void rolePermissionsResolvesThroughAConstantNumberOfQueriesRegardlessOfRoleCount() {
+	void _02_ShouldIssueConstantNumberOfQueries_WhenRolePermissionsAreResolvedForManyRoles() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		Permission permission = permissionForBatchTest(admin);
 

@@ -57,7 +57,7 @@ class ActivationTokenRepositoryTest {
 	}
 
 	@Test
-	void findByTokenReturnsPersistedToken() {
+	void _01_ShouldReturnPersistedToken_WhenFindingByToken() {
 		User user = persistUser("ada@example.com");
 		activationTokenRepository.save(ActivationToken.builder()
 				.user(user)
@@ -73,12 +73,12 @@ class ActivationTokenRepositoryTest {
 	}
 
 	@Test
-	void findByTokenReturnsEmptyWhenNoMatch() {
+	void _02_ShouldReturnEmpty_WhenNoTokenMatches() {
 		assertThat(activationTokenRepository.findByToken("missing")).isEmpty();
 	}
 
 	@Test
-	void tokenColumnRejectsDuplicates() {
+	void _03_ShouldRejectDuplicate_WhenTokenValueAlreadyExists() {
 		User first = persistUser("first@example.com");
 		User second = persistUser("second@example.com");
 		activationTokenRepository.save(ActivationToken.builder()
@@ -100,7 +100,7 @@ class ActivationTokenRepositoryTest {
 	}
 
 	@Test
-	void userAssociationIsLazyAndResolvedOnDemand() {
+	void _04_ShouldResolveUserOnDemand_WhenUserAssociationIsAccessed() {
 		User user = persistUser("ada@example.com");
 		ActivationToken saved = activationTokenRepository.save(ActivationToken.builder()
 				.user(user)

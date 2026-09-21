@@ -60,7 +60,7 @@ class UserRepositoryTest {
 	}
 
 	@Test
-	void findByEmailReturnsPersistedUser() {
+	void _01_ShouldReturnPersistedUser_WhenFindingByEmail() {
 		persistUser("ada@example.com");
 
 		Optional<User> found = userRepository.findByEmail("ada@example.com");
@@ -70,12 +70,12 @@ class UserRepositoryTest {
 	}
 
 	@Test
-	void findByEmailReturnsEmptyWhenNoMatch() {
+	void _02_ShouldReturnEmpty_WhenNoEmailMatches() {
 		assertThat(userRepository.findByEmail("missing@example.com")).isEmpty();
 	}
 
 	@Test
-	void existsByEmailReflectsPersistedState() {
+	void _03_ShouldReflectPersistedState_WhenCheckingExistenceByEmail() {
 		persistUser("ada@example.com");
 
 		assertThat(userRepository.existsByEmail("ada@example.com")).isTrue();
@@ -83,7 +83,7 @@ class UserRepositoryTest {
 	}
 
 	@Test
-	void emailColumnRejectsDuplicates() {
+	void _04_ShouldRejectDuplicate_WhenEmailAlreadyExists() {
 		persistUser("ada@example.com");
 
 		assertThatThrownBy(() -> {
@@ -100,7 +100,7 @@ class UserRepositoryTest {
 	}
 
 	@Test
-	void findAllWithRolesByIdInFetchesRolesInOneQueryRegardlessOfUserCount() {
+	void _05_ShouldFetchRolesInOneQuery_WhenManyUsersAreRequested() {
 		Role admin = roleRepository.save(Role.builder().roleName("ADMIN").build());
 		Role support = roleRepository.save(Role.builder().roleName("SUPPORT").build());
 

@@ -77,7 +77,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void registerActivateThenLoginSucceeds() {
+	void _01_ShouldLoginSuccessfully_WhenUserRegistersAndActivatesAccount() {
 		String email = uniqueEmail("flow");
 		register(email);
 
@@ -100,7 +100,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void registerRejectsDuplicateEmail() {
+	void _02_ShouldRejectRegistration_WhenEmailIsAlreadyUsed() {
 		String email = uniqueEmail("duplicate");
 		register(email);
 
@@ -116,7 +116,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void activateAccountRejectsUnknownToken() {
+	void _03_ShouldRejectActivation_WhenTokenIsUnknown() {
 		graphQlTester.document("mutation { activateAccount(token: \"does-not-exist\") }")
 				.execute()
 				.errors()
@@ -125,7 +125,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void activateAccountRejectsAlreadyActivatedToken() {
+	void _04_ShouldRejectActivation_WhenTokenIsAlreadyActivated() {
 		String email = uniqueEmail("reactivate");
 		register(email);
 		String activationToken = activationTokenFor(email);
@@ -142,7 +142,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void loginRejectsAccountThatWasNeverActivated() {
+	void _05_ShouldRejectLogin_WhenAccountWasNeverActivated() {
 		String email = uniqueEmail("inactive");
 		register(email);
 
@@ -156,7 +156,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void loginRejectsWrongPassword() {
+	void _06_ShouldRejectLogin_WhenPasswordIsWrong() {
 		String email = uniqueEmail("wrong-password");
 		createEnabledUser(email, "correct-password");
 
@@ -170,7 +170,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void logoutBlacklistsTokenSoFurtherRequestsAreAnonymous() {
+	void _07_ShouldTreatFurtherRequestsAsAnonymous_WhenTokenIsBlacklistedByLogout() {
 		String email = uniqueEmail("logout");
 		createEnabledUser(email, "secret-password");
 		String jwt = login(email, "secret-password");
@@ -188,7 +188,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void logoutWithoutATokenIsRejected() {
+	void _08_ShouldRejectLogout_WhenNoTokenIsProvided() {
 		graphQlTester.document("mutation { logout }")
 				.execute()
 				.errors()
@@ -197,7 +197,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void requestPasswordResetCreatesATokenForAKnownEmail() {
+	void _09_ShouldCreateResetToken_WhenEmailIsKnown() {
 		String email = uniqueEmail("reset");
 		createEnabledUser(email, "old-password");
 
@@ -214,7 +214,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void requestPasswordResetReturnsFalseForUnknownEmail() {
+	void _10_ShouldReturnFalse_WhenPasswordResetIsRequestedForUnknownEmail() {
 		graphQlTester.document("mutation { requestPasswordReset(email: \"nobody@example.com\") }")
 				.execute()
 				.path("requestPasswordReset")
@@ -223,7 +223,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void resetPasswordAllowsLoginWithTheNewPassword() {
+	void _11_ShouldAllowLoginWithNewPassword_WhenPasswordIsReset() {
 		String email = uniqueEmail("reset-flow");
 		createEnabledUser(email, "old-password");
 		graphQlTester.document("mutation($email: String!) { requestPasswordReset(email: $email) }")
@@ -247,7 +247,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void resetPasswordRejectsUnknownToken() {
+	void _12_ShouldRejectPasswordReset_WhenTokenIsUnknown() {
 		graphQlTester.document("mutation { resetPassword(token: \"does-not-exist\", newPassword: \"whatever\") }")
 				.execute()
 				.errors()
@@ -256,12 +256,12 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void meReturnsNullWithoutAuthentication() {
+	void _13_ShouldReturnNull_WhenMeIsQueriedWithoutAuthentication() {
 		graphQlTester.document("{ me { email } }").execute().path("me").valueIsNull();
 	}
 
 	@Test
-	void meReturnsTheAuthenticatedUser() {
+	void _14_ShouldReturnAuthenticatedUser_WhenMeIsQueriedWithValidToken() {
 		String email = uniqueEmail("me");
 		createEnabledUser(email, "secret-password");
 		String jwt = login(email, "secret-password");
