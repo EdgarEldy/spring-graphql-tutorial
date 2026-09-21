@@ -47,7 +47,7 @@ class RoleRepositoryTest {
 	private JpaTransactionManager transactionManager;
 
 	@Test
-	void findByRoleNameReturnsPersistedRole() {
+	void _01_ShouldReturnPersistedRole_WhenFindingByRoleName() {
 		roleRepository.save(Role.builder().roleName("ADMIN").build());
 
 		Optional<Role> found = roleRepository.findByRoleName("ADMIN");
@@ -57,12 +57,12 @@ class RoleRepositoryTest {
 	}
 
 	@Test
-	void findByRoleNameReturnsEmptyWhenNoMatch() {
+	void _02_ShouldReturnEmpty_WhenNoRoleNameMatches() {
 		assertThat(roleRepository.findByRoleName("MISSING")).isEmpty();
 	}
 
 	@Test
-	void existsByRoleNameReflectsPersistedState() {
+	void _03_ShouldReflectPersistedState_WhenCheckingExistenceByRoleName() {
 		roleRepository.save(Role.builder().roleName("ADMIN").build());
 
 		assertThat(roleRepository.existsByRoleName("ADMIN")).isTrue();
@@ -70,7 +70,7 @@ class RoleRepositoryTest {
 	}
 
 	@Test
-	void roleNameColumnRejectsDuplicates() {
+	void _04_ShouldRejectDuplicate_WhenRoleNameAlreadyExists() {
 		roleRepository.save(Role.builder().roleName("ADMIN").build());
 
 		assertThatThrownBy(() -> {
@@ -80,7 +80,7 @@ class RoleRepositoryTest {
 	}
 
 	@Test
-	void findAllWithPermissionsByIdInFetchesPermissionsInOneQueryRegardlessOfRoleCount() {
+	void _05_ShouldFetchPermissionsInOneQuery_WhenManyRolesAreRequested() {
 		Permission readProduct = permissionRepository
 				.save(Permission.builder().resource("product").action("read").build());
 		Permission deleteProduct = permissionRepository
