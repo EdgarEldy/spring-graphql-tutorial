@@ -272,7 +272,7 @@ class DataLoaderBatchingTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void orderCustomerAndProductResolveThroughAConstantNumberOfQueriesRegardlessOfOrderCount() {
+	void _04_ShouldIssueConstantNumberOfQueries_WhenOrderCustomersAndProductsAreResolvedForManyOrders() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String categoryName = "batch-order-category-" + UUID.randomUUID();
 		long categoryId = admin
