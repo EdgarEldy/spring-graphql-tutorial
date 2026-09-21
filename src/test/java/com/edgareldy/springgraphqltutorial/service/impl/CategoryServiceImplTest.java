@@ -49,7 +49,7 @@ class CategoryServiceImplTest {
 	}
 
 	@Test
-	void findAllReturnsAPageBuiltFromTheRepositoryPage() {
+	void _01_ShouldReturnPageBuiltFromRepositoryPage_WhenAllCategoriesAreRequested() {
 		Category category = Category.builder().id(1L).categoryName("Books").build();
 		when(categoryRepository.findAll(PageRequest.of(0, 20)))
 				.thenReturn(new PageImpl<>(List.of(category), PageRequest.of(0, 20), 1));
@@ -64,7 +64,7 @@ class CategoryServiceImplTest {
 	}
 
 	@Test
-	void findByIdReturnsCategory() {
+	void _02_ShouldReturnCategory_WhenCategoryExists() {
 		Category category = Category.builder().id(1L).categoryName("Books").build();
 		when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
 
@@ -72,14 +72,14 @@ class CategoryServiceImplTest {
 	}
 
 	@Test
-	void findByIdThrowsWhenCategoryMissing() {
+	void _03_ShouldThrowNotFound_WhenCategoryIsMissing() {
 		when(categoryRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> categoryService.findById(99L)).isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
-	void createSavesNewCategory() {
+	void _04_ShouldSaveCategory_WhenCategoryIsNew() {
 		CategoryInput input = new CategoryInput("Books");
 		when(categoryRepository.existsByCategoryName("Books")).thenReturn(false);
 		when(categoryRepository.save(any(Category.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -90,7 +90,7 @@ class CategoryServiceImplTest {
 	}
 
 	@Test
-	void createRejectsDuplicateCategoryName() {
+	void _05_ShouldRejectCreation_WhenCategoryNameIsDuplicate() {
 		CategoryInput input = new CategoryInput("Books");
 		when(categoryRepository.existsByCategoryName("Books")).thenReturn(true);
 
@@ -100,7 +100,7 @@ class CategoryServiceImplTest {
 	}
 
 	@Test
-	void updateChangesCategoryName() {
+	void _06_ShouldChangeCategoryName_WhenCategoryIsUpdated() {
 		Category category = Category.builder().id(1L).categoryName("Books").build();
 		CategoryInput input = new CategoryInput("Comics");
 		when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
@@ -113,7 +113,7 @@ class CategoryServiceImplTest {
 	}
 
 	@Test
-	void updateThrowsWhenCategoryMissing() {
+	void _07_ShouldThrowNotFound_WhenUpdatedCategoryIsMissing() {
 		CategoryInput input = new CategoryInput("Comics");
 		when(categoryRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -121,7 +121,7 @@ class CategoryServiceImplTest {
 	}
 
 	@Test
-	void updateRejectsNameAlreadyUsedByAnotherCategory() {
+	void _08_ShouldRejectUpdate_WhenNameIsUsedByAnotherCategory() {
 		Category category = Category.builder().id(1L).categoryName("Books").build();
 		CategoryInput input = new CategoryInput("Comics");
 		when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
@@ -133,7 +133,7 @@ class CategoryServiceImplTest {
 	}
 
 	@Test
-	void updateAllowsKeepingTheSameNameUnchanged() {
+	void _09_ShouldAllowUpdate_WhenNameIsKeptUnchanged() {
 		Category category = Category.builder().id(1L).categoryName("Books").build();
 		CategoryInput input = new CategoryInput("Books");
 		when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
@@ -146,7 +146,7 @@ class CategoryServiceImplTest {
 	}
 
 	@Test
-	void deleteRemovesCategoryWithNoProducts() {
+	void _10_ShouldRemoveCategory_WhenCategoryHasNoProducts() {
 		Category category = Category.builder().id(1L).categoryName("Books").build();
 		when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
 		when(categoryRepository.countProductsByCategoryId(1L)).thenReturn(0L);
@@ -157,7 +157,7 @@ class CategoryServiceImplTest {
 	}
 
 	@Test
-	void deleteThrowsWhenCategoryMissing() {
+	void _11_ShouldThrowNotFound_WhenDeletedCategoryIsMissing() {
 		when(categoryRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> categoryService.delete(99L)).isInstanceOf(ResourceNotFoundException.class);
@@ -166,7 +166,7 @@ class CategoryServiceImplTest {
 	}
 
 	@Test
-	void deleteRejectsCategoryThatStillHasProducts() {
+	void _12_ShouldRejectDeletion_WhenCategoryStillHasProducts() {
 		Category category = Category.builder().id(1L).categoryName("Books").build();
 		when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
 		when(categoryRepository.countProductsByCategoryId(1L)).thenReturn(3L);
