@@ -43,7 +43,7 @@ class CustomerControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void customersReturnsAPaginatedListIncludingACreatedCustomer() {
+	void _01_ShouldReturnPaginatedListWithCreatedCustomer_WhenCustomersAreQueried() {
 		String firstName = uniqueName("jane");
 		String email = uniqueEmail("customers-list");
 		createCustomer(firstName, email);
@@ -58,7 +58,7 @@ class CustomerControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void customerReturnsDetailById() {
+	void _02_ShouldReturnCustomerDetail_WhenCustomerIdExists() {
 		String firstName = uniqueName("detail");
 		String email = uniqueEmail("customer-detail");
 		long id = createCustomer(firstName, email);
@@ -75,7 +75,7 @@ class CustomerControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void customerReturnsNotFoundForUnknownId() {
+	void _03_ShouldReturnNotFound_WhenCustomerIdIsUnknown() {
 		graphQlTester.document("query($id: ID!) { customer(id: $id) { firstName } }")
 				.variable("id", 999_999_999L)
 				.execute()
@@ -85,7 +85,7 @@ class CustomerControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createCustomerSucceeds() {
+	void _04_ShouldCreateCustomer_WhenInputIsValid() {
 		String firstName = uniqueName("new-customer");
 		String email = uniqueEmail("create-customer");
 
@@ -109,7 +109,7 @@ class CustomerControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void createCustomerRejectsDuplicateEmail() {
+	void _05_ShouldRejectCustomerCreation_WhenEmailIsDuplicate() {
 		String email = uniqueEmail("duplicate-customer");
 		createCustomer(uniqueName("first"), email);
 
@@ -128,7 +128,7 @@ class CustomerControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateCustomerChangesFields() {
+	void _06_ShouldChangeFields_WhenCustomerIsUpdated() {
 		long id = createCustomer(uniqueName("before-update"), uniqueEmail("before-update"));
 		String newFirstName = uniqueName("after-update");
 		String newEmail = uniqueEmail("after-update");
@@ -159,7 +159,7 @@ class CustomerControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateCustomerReturnsNotFoundForUnknownId() {
+	void _07_ShouldReturnNotFound_WhenUpdatedCustomerIdIsUnknown() {
 		graphQlTester.document("""
 				mutation($id: ID!) {
 				  updateCustomer(id: $id, input: { firstName: "Unknown", lastName: "Doe", telephone: "555-0100", email: "unknown@example.com", address: "1 Main Street" }) {
@@ -175,7 +175,7 @@ class CustomerControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void updateCustomerRejectsEmailAlreadyUsedByAnotherCustomer() {
+	void _08_ShouldRejectUpdate_WhenEmailIsUsedByAnotherCustomer() {
 		String takenEmail = uniqueEmail("taken");
 		createCustomer(uniqueName("taken-owner"), takenEmail);
 		long id = createCustomer(uniqueName("to-rename"), uniqueEmail("to-rename"));
@@ -196,7 +196,7 @@ class CustomerControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteCustomerRemovesIt() {
+	void _09_ShouldRemoveCustomer_WhenCustomerIsDeleted() {
 		long id = createCustomer(uniqueName("deletable"), uniqueEmail("deletable"));
 
 		graphQlTester.document("mutation($id: ID!) { deleteCustomer(id: $id) }")
@@ -215,7 +215,7 @@ class CustomerControllerTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void deleteCustomerReturnsNotFoundForUnknownId() {
+	void _10_ShouldReturnNotFound_WhenDeletedCustomerIdIsUnknown() {
 		graphQlTester.document("mutation($id: ID!) { deleteCustomer(id: $id) }")
 				.variable("id", 999_999_999L)
 				.execute()

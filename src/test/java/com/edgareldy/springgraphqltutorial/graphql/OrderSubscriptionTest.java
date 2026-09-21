@@ -88,7 +88,7 @@ class OrderSubscriptionTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void orderCreatedStreamsANewOrderToAConnectedSubscriberOverWebSocket() {
+	void _01_ShouldStreamNewOrderToSubscriber_WhenOrderIsCreatedOverWebSocket() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long categoryId = createCategoryAsAdmin(admin, "sub-books-" + UUID.randomUUID());
 		long productId = createProductAsAdmin(admin, "sub-product-" + UUID.randomUUID(), 12.5, categoryId);

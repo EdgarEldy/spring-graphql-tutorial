@@ -54,7 +54,7 @@ class ProductRepositoryTest {
 	}
 
 	@Test
-	void findByCategoryIdReturnsOnlyProductsOfThatCategory() {
+	void _01_ShouldReturnOnlyProductsOfCategory_WhenFindingByCategoryId() {
 		Category books = persistCategory("Books");
 		Category toys = persistCategory("Toys");
 		persistProduct(books, "Clean Code", "39.99");
@@ -69,7 +69,7 @@ class ProductRepositoryTest {
 	}
 
 	@Test
-	void findByCategoryIdReturnsAnEmptyPageWhenCategoryHasNoProduct() {
+	void _02_ShouldReturnEmptyPage_WhenCategoryHasNoProduct() {
 		Category empty = persistCategory("Empty Category");
 
 		Page<Product> page = productRepository.findByCategoryId(empty.getId(), PageRequest.of(0, 20));
@@ -79,7 +79,7 @@ class ProductRepositoryTest {
 	}
 
 	@Test
-	void findByCategoryIdHonoursPagination() {
+	void _03_ShouldHonourPagination_WhenFindingByCategoryId() {
 		Category books = persistCategory("Books");
 		persistProduct(books, "Book One", "9.99");
 		persistProduct(books, "Book Two", "9.99");
@@ -93,7 +93,7 @@ class ProductRepositoryTest {
 	}
 
 	@Test
-	void findAllReturnsProductsAcrossEveryCategory() {
+	void _04_ShouldReturnProductsAcrossEveryCategory_WhenFindingAll() {
 		Category books = persistCategory("Books");
 		Category toys = persistCategory("Toys");
 		persistProduct(books, "Clean Code", "39.99");
@@ -106,7 +106,7 @@ class ProductRepositoryTest {
 	}
 
 	@Test
-	void categoryIdColumnRejectsAReferenceToAnUnknownCategory() {
+	void _05_ShouldRejectReference_WhenCategoryIdIsUnknown() {
 		Category phantom = Category.builder().id(999_999_999L).categoryName("Phantom").build();
 
 		assertThatThrownBy(() -> {
@@ -117,7 +117,7 @@ class ProductRepositoryTest {
 	}
 
 	@Test
-	void unitPriceColumnRejectsAZeroOrNegativeValue() {
+	void _06_ShouldRejectValue_WhenUnitPriceIsZeroOrNegative() {
 		Category books = persistCategory("Books");
 
 		assertThatThrownBy(() -> {
@@ -128,7 +128,7 @@ class ProductRepositoryTest {
 	}
 
 	@Test
-	void productCategoryAssociationIsLazyByDefault() {
+	void _07_ShouldLoadCategoryLazily_WhenProductIsFetched() {
 		Category books = persistCategory("Books");
 		Product saved = persistProduct(books, "Clean Code", "39.99");
 		entityManager.flush();

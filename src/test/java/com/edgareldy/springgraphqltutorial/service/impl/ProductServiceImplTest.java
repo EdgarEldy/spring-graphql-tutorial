@@ -63,7 +63,7 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void findAllWithoutCategoryFilterDelegatesToFindAll() {
+	void _01_ShouldDelegateToFindAll_WhenNoCategoryFilterIsGiven() {
 		Product product = cleanCode(books());
 		when(productRepository.findAll(PageRequest.of(0, 20)))
 				.thenReturn(new PageImpl<>(List.of(product), PageRequest.of(0, 20), 1));
@@ -79,7 +79,7 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void findAllWithCategoryFilterDelegatesToFindByCategoryId() {
+	void _02_ShouldDelegateToFindByCategoryId_WhenCategoryFilterIsGiven() {
 		Product product = cleanCode(books());
 		when(productRepository.findByCategoryId(1L, PageRequest.of(0, 20)))
 				.thenReturn(new PageImpl<>(List.of(product), PageRequest.of(0, 20), 1));
@@ -91,7 +91,7 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void findByIdReturnsProduct() {
+	void _03_ShouldReturnProduct_WhenProductExists() {
 		Product product = cleanCode(books());
 		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
@@ -99,14 +99,14 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void findByIdThrowsWhenProductMissing() {
+	void _04_ShouldThrowNotFound_WhenProductIsMissing() {
 		when(productRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> productService.findById(99L)).isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
-	void createSavesNewProductAttachedToItsCategory() {
+	void _05_ShouldSaveProductAttachedToCategory_WhenProductIsNew() {
 		Category category = books();
 		ProductInput input = new ProductInput("Clean Code", new BigDecimal("39.99"), 1L);
 		when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
@@ -120,7 +120,7 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void createThrowsWhenCategoryMissing() {
+	void _06_ShouldThrowNotFound_WhenCreatedProductCategoryIsMissing() {
 		ProductInput input = new ProductInput("Clean Code", new BigDecimal("39.99"), 99L);
 		when(categoryRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -130,7 +130,7 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void updateChangesProductNamePriceAndCategory() {
+	void _07_ShouldChangeNamePriceAndCategory_WhenProductIsUpdated() {
 		Category books = books();
 		Category toys = Category.builder().id(2L).categoryName("Toys").build();
 		Product product = cleanCode(books);
@@ -147,7 +147,7 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void updateThrowsWhenProductMissing() {
+	void _08_ShouldThrowNotFound_WhenUpdatedProductIsMissing() {
 		ProductInput input = new ProductInput("Building Blocks", new BigDecimal("19.99"), 1L);
 		when(productRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -158,7 +158,7 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void updateThrowsWhenCategoryMissing() {
+	void _09_ShouldThrowNotFound_WhenUpdatedProductCategoryIsMissing() {
 		Product product = cleanCode(books());
 		ProductInput input = new ProductInput("Clean Code", new BigDecimal("39.99"), 99L);
 		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
@@ -170,7 +170,7 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void deleteRemovesProduct() {
+	void _10_ShouldRemoveProduct_WhenProductExists() {
 		Product product = cleanCode(books());
 		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
@@ -180,7 +180,7 @@ class ProductServiceImplTest {
 	}
 
 	@Test
-	void deleteThrowsWhenProductMissing() {
+	void _11_ShouldThrowNotFound_WhenDeletedProductIsMissing() {
 		when(productRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> productService.delete(99L)).isInstanceOf(ResourceNotFoundException.class);
