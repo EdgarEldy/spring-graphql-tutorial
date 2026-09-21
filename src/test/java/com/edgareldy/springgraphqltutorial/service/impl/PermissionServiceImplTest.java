@@ -46,7 +46,7 @@ class PermissionServiceImplTest {
 	}
 
 	@Test
-	void findAllReturnsEveryPermission() {
+	void _01_ShouldReturnEveryPermission_WhenAllPermissionsAreRequested() {
 		Permission permission = Permission.builder().id(1L).resource("product").action("delete").build();
 		when(permissionRepository.findAll()).thenReturn(List.of(permission));
 
@@ -54,7 +54,7 @@ class PermissionServiceImplTest {
 	}
 
 	@Test
-	void createSavesNewPermission() {
+	void _02_ShouldSavePermission_WhenPermissionIsNew() {
 		PermissionInput input = new PermissionInput("product", "delete");
 		when(permissionRepository.existsByResourceAndAction("product", "delete")).thenReturn(false);
 		when(permissionRepository.save(any(Permission.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -66,7 +66,7 @@ class PermissionServiceImplTest {
 	}
 
 	@Test
-	void createRejectsDuplicateResourceActionPair() {
+	void _03_ShouldRejectCreation_WhenResourceActionPairIsDuplicate() {
 		PermissionInput input = new PermissionInput("product", "delete");
 		when(permissionRepository.existsByResourceAndAction("product", "delete")).thenReturn(true);
 
@@ -76,7 +76,7 @@ class PermissionServiceImplTest {
 	}
 
 	@Test
-	void deleteRemovesPermission() {
+	void _04_ShouldRemovePermission_WhenPermissionExists() {
 		Permission permission = Permission.builder().id(1L).resource("product").action("delete").build();
 		when(permissionRepository.findById(1L)).thenReturn(Optional.of(permission));
 
@@ -86,7 +86,7 @@ class PermissionServiceImplTest {
 	}
 
 	@Test
-	void deleteThrowsWhenPermissionMissing() {
+	void _05_ShouldThrowNotFound_WhenDeletedPermissionIsMissing() {
 		when(permissionRepository.findById(99L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> permissionService.delete(99L)).isInstanceOf(ResourceNotFoundException.class);

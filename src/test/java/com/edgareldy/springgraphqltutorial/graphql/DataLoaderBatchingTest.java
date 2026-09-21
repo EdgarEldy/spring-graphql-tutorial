@@ -67,7 +67,7 @@ class DataLoaderBatchingTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void userRolesResolvesThroughAConstantNumberOfQueriesRegardlessOfUserCount() {
+	void _01_ShouldIssueConstantNumberOfQueries_WhenUserRolesAreResolvedForManyUsers() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		Role role = roleRepository
 				.save(Role.builder().roleName("BATCH_ROLE_" + UUID.randomUUID().toString().substring(0, 8)).build());
@@ -122,7 +122,7 @@ class DataLoaderBatchingTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void rolePermissionsResolvesThroughAConstantNumberOfQueriesRegardlessOfRoleCount() {
+	void _02_ShouldIssueConstantNumberOfQueries_WhenRolePermissionsAreResolvedForManyRoles() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		Permission permission = permissionForBatchTest(admin);
 
@@ -195,7 +195,7 @@ class DataLoaderBatchingTest extends GraphQlIntegrationTestSupport {
 	}
 
 	@Test
-	void productCategoryResolvesThroughAConstantNumberOfQueriesRegardlessOfProductCount() {
+	void _03_ShouldIssueConstantNumberOfQueries_WhenProductCategoriesAreResolvedForManyProducts() {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		String categoryName = "batch-category-" + UUID.randomUUID();
 		long categoryId = admin

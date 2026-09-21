@@ -32,7 +32,7 @@ class PermissionRepositoryTest {
 	private PermissionRepository permissionRepository;
 
 	@Test
-	void existsByResourceAndActionReflectsPersistedState() {
+	void _01_ShouldReflectPersistedState_WhenCheckingExistenceByResourceAndAction() {
 		permissionRepository.save(Permission.builder().resource("product").action("delete").build());
 
 		assertThat(permissionRepository.existsByResourceAndAction("product", "delete")).isTrue();
@@ -41,7 +41,7 @@ class PermissionRepositoryTest {
 	}
 
 	@Test
-	void sameResourceWithDifferentActionIsAllowed() {
+	void _02_ShouldAllowPermission_WhenSameResourceHasDifferentAction() {
 		permissionRepository.save(Permission.builder().resource("product").action("delete").build());
 
 		Permission readPermission = permissionRepository
@@ -51,7 +51,7 @@ class PermissionRepositoryTest {
 	}
 
 	@Test
-	void resourceActionPairColumnsRejectDuplicates() {
+	void _03_ShouldRejectDuplicate_WhenResourceActionPairAlreadyExists() {
 		permissionRepository.save(Permission.builder().resource("product").action("delete").build());
 
 		assertThatThrownBy(() -> {
