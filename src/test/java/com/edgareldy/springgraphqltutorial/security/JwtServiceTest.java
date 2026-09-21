@@ -51,7 +51,7 @@ class JwtServiceTest {
 	}
 
 	@Test
-	void generateTokenEmbedsEmailAsSubject() {
+	void _01_ShouldEmbedEmailAsSubject_WhenTokenIsGenerated() {
 		User user = buildUser("ADMIN");
 
 		String token = jwtService.generateToken(user);
@@ -60,7 +60,7 @@ class JwtServiceTest {
 	}
 
 	@Test
-	void generateTokenAssignsAUniqueJti() {
+	void _02_ShouldAssignUniqueJti_WhenTokensAreGenerated() {
 		User user = buildUser();
 
 		String firstToken = jwtService.generateToken(user);
@@ -70,7 +70,7 @@ class JwtServiceTest {
 	}
 
 	@Test
-	void generateTokenSetsIssuedAtBeforeExpiration() {
+	void _03_ShouldSetIssuedAtBeforeExpiration_WhenTokenIsGenerated() {
 		User user = buildUser();
 
 		String token = jwtService.generateToken(user);
@@ -81,7 +81,7 @@ class JwtServiceTest {
 	}
 
 	@Test
-	void extractAuthoritiesPrefixesEveryRoleNameWithRole() {
+	void _04_ShouldPrefixEveryRoleNameWithRole_WhenAuthoritiesAreExtracted() {
 		User user = buildUser("ADMIN", "SUPPORT");
 
 		String token = jwtService.generateToken(user);
@@ -91,7 +91,7 @@ class JwtServiceTest {
 	}
 
 	@Test
-	void extractAuthoritiesReturnsEmptySetForUserWithoutRoles() {
+	void _05_ShouldReturnEmptySet_WhenUserHasNoRoles() {
 		User user = buildUser();
 
 		String token = jwtService.generateToken(user);
