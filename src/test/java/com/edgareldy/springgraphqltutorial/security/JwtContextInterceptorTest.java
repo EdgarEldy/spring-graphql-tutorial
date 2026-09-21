@@ -48,7 +48,7 @@ class JwtContextInterceptorTest {
 	}
 
 	@Test
-	void placesRawTokenInGraphQlContextWhenBearerHeaderPresent() {
+	void _01_ShouldPlaceRawTokenInContext_WhenBearerHeaderIsPresent() {
 		WebGraphQlRequest request = buildRequest("Bearer raw-jwt-value");
 		WebGraphQlInterceptor.Chain chain = mock(WebGraphQlInterceptor.Chain.class);
 		when(chain.next(request)).thenReturn(Mono.just(mock(WebGraphQlResponse.class)));
@@ -61,7 +61,7 @@ class JwtContextInterceptorTest {
 	}
 
 	@Test
-	void leavesGraphQlContextEmptyWhenNoAuthorizationHeader() {
+	void _02_ShouldLeaveContextEmpty_WhenAuthorizationHeaderIsAbsent() {
 		WebGraphQlRequest request = buildRequest(null);
 		WebGraphQlInterceptor.Chain chain = mock(WebGraphQlInterceptor.Chain.class);
 		when(chain.next(request)).thenReturn(Mono.just(mock(WebGraphQlResponse.class)));
@@ -73,7 +73,7 @@ class JwtContextInterceptorTest {
 	}
 
 	@Test
-	void leavesGraphQlContextEmptyWhenHeaderIsNotABearerToken() {
+	void _03_ShouldLeaveContextEmpty_WhenHeaderIsNotABearerToken() {
 		WebGraphQlRequest request = buildRequest("Basic dXNlcjpwYXNz");
 		WebGraphQlInterceptor.Chain chain = mock(WebGraphQlInterceptor.Chain.class);
 		when(chain.next(request)).thenReturn(Mono.just(mock(WebGraphQlResponse.class)));

@@ -14,6 +14,8 @@ This document is the **complete specification** of the project: it is meant to b
 - [Branching strategy](#branching-strategy)
 - [Project structure](#project-structure)
 - [Standard response format](#standard-response-format)
+- [Testing strategy](#testing-strategy)
+  - [Test naming convention](#test-naming-convention)
 - [feature/core-architecture](#featurecore-architecture)
 - [feature/auth](#featureauth)
 - [feature/categories](#featurecategories)
@@ -202,6 +204,31 @@ public class GraphQlExceptionResolver implements DataFetcherExceptionResolver {
 - Every exception surfaces as a GraphQL error with a consistent `extensions.classification` value (`NOT_FOUND`, `BAD_REQUEST`, `FORBIDDEN`, `INTERNAL_ERROR`), so clients can branch on it the same way they would branch on an HTTP status code in a REST API
 - `ResourceNotFoundException` → `NOT_FOUND`, validation failures → `BAD_REQUEST`, `BusinessRuleException` → `BAD_REQUEST` with a business-specific message, anything unmapped → `INTERNAL_ERROR` with a generic message (never leaking the raw exception to the client)
 - Partial responses are expected and normal in GraphQL: a query can return `data` for the fields that resolved successfully alongside `errors` for the ones that failed - this is not an error state to work around, it's how the protocol is designed to behave
+
+## Testing strategy
+
+Every branch ships its tests before its Pull Request is opened, at the layers that apply to what the branch adds.
+
+| Layer | Tool | What it verifies | Lives in |
+|---|---|---|---|
+| Repository | `@DataJpaTest` + Testcontainers (real PostgreSQL) | Derived queries, constraints and mappings against a real schema | `src/test/.../repository/` |
+| Service | JUnit 5 + Mockito | Business rules and orchestration, with every repository dependency mocked | `src/test/.../service/impl/` |
+| Security | JUnit 5 + Mockito | JWT issuing/validation, the authentication filter and the GraphQL context interceptor | `src/test/.../security/` |
+| GraphQL | `HttpGraphQlTester` / `WebSocketGraphQlTester` + Testcontainers | Every query, mutation and subscription end to end, `DataLoader` batching, authorization rejections and the shape of GraphQL errors | `src/test/.../graphql/` |
+
+### Test naming convention
+
+Every test method, at every layer, is named `_NN_Should<Outcome>_When<Condition>`: a two-digit, zero-padded sequence number (the order of the methods within the class, restarting at `_01_` in each class; JUnit does not enforce it, it is kept consistent by convention), followed by what is expected, followed by the condition that produces it.
+
+```java
+@Test
+void _01_ShouldReturnCategory_WhenCategoryExists() { ... }
+
+@Test
+void _02_ShouldRaiseNotFoundError_WhenCategoryDoesNotExist() { ... }
+```
+
+No other naming style (`shouldX()`, `testX()`, `givenX_whenY_thenZ()`, `registerRejectsDuplicateEmail()`) is used anywhere in this project's test suite. This applies to test methods only, not to `@BeforeEach`/`@AfterEach` helpers.
 
 ## feature/core-architecture
 

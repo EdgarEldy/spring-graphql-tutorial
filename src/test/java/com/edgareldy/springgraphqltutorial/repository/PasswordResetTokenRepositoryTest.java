@@ -49,7 +49,7 @@ class PasswordResetTokenRepositoryTest {
 	}
 
 	@Test
-	void findByTokenReturnsPersistedToken() {
+	void _01_ShouldReturnPersistedToken_WhenFindingByToken() {
 		User user = persistUser("ada@example.com");
 		passwordResetTokenRepository.save(PasswordResetToken.builder()
 				.user(user)
@@ -65,12 +65,12 @@ class PasswordResetTokenRepositoryTest {
 	}
 
 	@Test
-	void findByTokenReturnsEmptyWhenNoMatch() {
+	void _02_ShouldReturnEmpty_WhenNoTokenMatches() {
 		assertThat(passwordResetTokenRepository.findByToken("missing")).isEmpty();
 	}
 
 	@Test
-	void tokenColumnRejectsDuplicates() {
+	void _03_ShouldRejectDuplicate_WhenTokenValueAlreadyExists() {
 		User first = persistUser("first@example.com");
 		User second = persistUser("second@example.com");
 		passwordResetTokenRepository.save(PasswordResetToken.builder()

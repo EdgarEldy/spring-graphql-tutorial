@@ -61,7 +61,7 @@ class BlacklistedTokenRepositoryTest {
 	}
 
 	@Test
-	void existsByJtiReflectsPersistedState() {
+	void _01_ShouldReflectPersistedState_WhenCheckingExistenceByJti() {
 		User user = persistUser("ada@example.com");
 		blacklistedTokenRepository.save(buildToken(user, "jti-1"));
 
@@ -70,7 +70,7 @@ class BlacklistedTokenRepositoryTest {
 	}
 
 	@Test
-	void jtiColumnRejectsDuplicates() {
+	void _02_ShouldRejectDuplicate_WhenJtiAlreadyExists() {
 		User user = persistUser("ada@example.com");
 		blacklistedTokenRepository.save(buildToken(user, "jti-1"));
 
