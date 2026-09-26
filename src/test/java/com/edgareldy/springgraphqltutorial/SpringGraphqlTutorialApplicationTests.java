@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Import;
 class SpringGraphqlTutorialApplicationTests {
 
 	@Test
-	void _01_ShouldLoadApplicationContext_WhenApplicationStarts() {
+	void contextLoads() {
 	}
 
 }
