@@ -138,6 +138,8 @@ input UpdateUserRolesInput {
 type Category {
     id: ID!
     categoryName: String!
+    createdAt: String
+    updatedAt: String
 }
 
 type CategoryPage {
