@@ -5,12 +5,14 @@ import com.edgareldy.springgraphqltutorial.exception.BusinessRuleException;
 import com.edgareldy.springgraphqltutorial.graphql.input.AuthPayload;
 import com.edgareldy.springgraphqltutorial.graphql.input.LoginInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.RegisterInput;
+import com.edgareldy.springgraphqltutorial.graphql.input.UpdateProfileInput;
 import com.edgareldy.springgraphqltutorial.security.JwtContextInterceptor;
 import com.edgareldy.springgraphqltutorial.service.UserService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.ContextValue;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,6 +69,18 @@ public class AuthController {
 	@MutationMapping
 	public boolean resetPassword(@Argument String token, @Argument String newPassword) {
 		return userService.resetPassword(token, newPassword);
+	}
+
+	@MutationMapping
+	public AuthPayload refreshToken(@Argument String token) {
+		return userService.refreshToken(token);
+	}
+
+	@MutationMapping
+	@PreAuthorize("isAuthenticated()")
+	public User updateProfile(@Argument UpdateProfileInput input) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return userService.updateProfile(authentication.getName(), input);
 	}
 
 	@QueryMapping
