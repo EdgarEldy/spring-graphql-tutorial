@@ -109,14 +109,14 @@ abstract class GraphQlIntegrationTestSupport {
 		return graphQlTester.document("""
 				mutation Login($email: String!, $password: String!) {
 				  login(input: { email: $email, password: $password }) {
-				    token
+				    accessToken
 				  }
 				}
 				""")
 				.variable("email", email)
 				.variable("password", rawPassword)
 				.execute()
-				.path("login.token")
+				.path("login.accessToken")
 				.entity(String.class)
 				.get();
 	}
