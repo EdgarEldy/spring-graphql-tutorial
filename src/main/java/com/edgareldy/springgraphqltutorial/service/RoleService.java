@@ -6,13 +6,14 @@ import com.edgareldy.springgraphqltutorial.entity.Role;
 import com.edgareldy.springgraphqltutorial.exception.BusinessRuleException;
 import com.edgareldy.springgraphqltutorial.exception.ResourceNotFoundException;
 import com.edgareldy.springgraphqltutorial.graphql.input.RoleInput;
+import com.edgareldy.springgraphqltutorial.graphql.input.UpdateRolePermissionsInput;
 
 /**
  * Role administration, including permission assignment since assigning a
  * permission is a relationship change on the Role aggregate.
  * <p>
- * Created by Edgar Muhamyangabo on 8/24/26
- * Author : Edgar Muhamyangabo
+ * Created by edgar.muhamyangabo on 8/24/26
+ * Author : edgar.muhamyangabo
  * Date : 8/24/26
  * Project : spring-graphql-tutorial
  */
@@ -41,13 +42,13 @@ public interface RoleService {
 	void delete(Long id);
 
 	/**
-	 * @throws ResourceNotFoundException if the role or the permission does not exist
+	 * Adds and/or removes permissions from a role in a single idempotent operation.
+	 * Adding an already-present permission or removing an absent one is a no-op.
+	 *
+	 * @throws BusinessRuleException if add and remove are both empty, or an id
+	 *     appears in both lists
+	 * @throws ResourceNotFoundException listing every unknown permission id
 	 */
-	Role assignPermissionToRole(Long roleId, Long permissionId);
-
-	/**
-	 * @throws ResourceNotFoundException if the role or the permission does not exist
-	 */
-	Role removePermissionFromRole(Long roleId, Long permissionId);
+	Role updatePermissions(Long roleId, UpdateRolePermissionsInput input);
 
 }

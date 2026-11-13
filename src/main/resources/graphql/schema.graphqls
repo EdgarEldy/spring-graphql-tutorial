@@ -25,24 +25,24 @@ type Mutation {
     activateAccount(token: String!): Boolean!
     login(input: LoginInput!): AuthPayload!
     logout: Boolean!
+    refreshToken(token: String!): AuthPayload!
     requestPasswordReset(email: String!): Boolean!
     resetPassword(token: String!, newPassword: String!): Boolean!
+    updateProfile(input: UpdateProfileInput!): User!
 
     createUser(input: CreateUserInput!): User!
     updateUser(id: ID!, input: UpdateUserInput!): User!
     lockUser(id: ID!): User!
     unlockUser(id: ID!): User!
     deleteUser(id: ID!): Boolean!
-    assignRoleToUser(userId: ID!, roleId: ID!): User!
-    removeRoleFromUser(userId: ID!, roleId: ID!): User!
+    updateUserRoles(id: ID!, input: UpdateUserRolesInput!): User!
 
     createRole(input: RoleInput!): Role!
     updateRole(id: ID!, input: RoleInput!): Role!
     deleteRole(id: ID!): Boolean!
     createPermission(input: PermissionInput!): Permission!
     deletePermission(id: ID!): Boolean!
-    assignPermissionToRole(roleId: ID!, permissionId: ID!): Role!
-    removePermissionFromRole(roleId: ID!, permissionId: ID!): Role!
+    updateRolePermissions(roleId: ID!, input: UpdateRolePermissionsInput!): Role!
 
     createCategory(input: CategoryInput!): Category!
     updateCategory(id: ID!, input: CategoryInput!): Category!
@@ -92,7 +92,10 @@ type UserPage {
 }
 
 type AuthPayload {
-    token: String
+    accessToken: String
+    tokenType: String
+    refreshToken: String
+    expiresIn: Int
     user: User!
 }
 
@@ -130,9 +133,27 @@ input PermissionInput {
     action: String!
 }
 
+input UpdateProfileInput {
+    firstName: String
+    lastName: String
+    email: String
+}
+
+input UpdateRolePermissionsInput {
+    add: [ID!]
+    remove: [ID!]
+}
+
+input UpdateUserRolesInput {
+    add: [ID!]
+    remove: [ID!]
+}
+
 type Category {
     id: ID!
     categoryName: String!
+    createdAt: String
+    updatedAt: String
 }
 
 type CategoryPage {
@@ -151,6 +172,7 @@ type Product {
     id: ID!
     productName: String!
     unitPrice: Float!
+    version: Int!
     category: Category!
 }
 

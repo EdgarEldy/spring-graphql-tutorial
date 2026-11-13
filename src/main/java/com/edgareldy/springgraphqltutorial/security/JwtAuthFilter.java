@@ -62,6 +62,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 	private Optional<Authentication> resolveAuthentication(String token) {
 		try {
+			// Refresh tokens must not authenticate requests; they are only accepted
+			// by the refreshToken mutation which validates them explicitly.
+			if (jwtService.isRefreshToken(token)) {
+				return Optional.empty();
+			}
 			String jti = jwtService.extractJti(token);
 			if (blacklistedTokenRepository.existsByJti(jti)) {
 				return Optional.empty();

@@ -6,6 +6,7 @@ import com.edgareldy.springgraphqltutorial.entity.Permission;
 import com.edgareldy.springgraphqltutorial.entity.Role;
 import com.edgareldy.springgraphqltutorial.graphql.input.PermissionInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.RoleInput;
+import com.edgareldy.springgraphqltutorial.graphql.input.UpdateRolePermissionsInput;
 import com.edgareldy.springgraphqltutorial.service.PermissionService;
 import com.edgareldy.springgraphqltutorial.service.RoleService;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -79,13 +80,8 @@ public class RoleController {
 	}
 
 	@MutationMapping
-	public Role assignPermissionToRole(@Argument Long roleId, @Argument Long permissionId) {
-		return roleService.assignPermissionToRole(roleId, permissionId);
-	}
-
-	@MutationMapping
-	public Role removePermissionFromRole(@Argument Long roleId, @Argument Long permissionId) {
-		return roleService.removePermissionFromRole(roleId, permissionId);
+	public Role updateRolePermissions(@Argument Long roleId, @Argument UpdateRolePermissionsInput input) {
+		return roleService.updatePermissions(roleId, input);
 	}
 
 }
