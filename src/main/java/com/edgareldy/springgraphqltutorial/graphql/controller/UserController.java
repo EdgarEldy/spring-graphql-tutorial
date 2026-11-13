@@ -3,6 +3,7 @@ package com.edgareldy.springgraphqltutorial.graphql.controller;
 import com.edgareldy.springgraphqltutorial.entity.User;
 import com.edgareldy.springgraphqltutorial.graphql.input.CreateUserInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.UpdateUserInput;
+import com.edgareldy.springgraphqltutorial.graphql.input.UpdateUserRolesInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.UserPage;
 import com.edgareldy.springgraphqltutorial.service.UserService;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -72,13 +73,8 @@ public class UserController {
 	}
 
 	@MutationMapping
-	public User assignRoleToUser(@Argument Long userId, @Argument Long roleId) {
-		return userService.assignRoleToUser(userId, roleId);
-	}
-
-	@MutationMapping
-	public User removeRoleFromUser(@Argument Long userId, @Argument Long roleId) {
-		return userService.removeRoleFromUser(userId, roleId);
+	public User updateUserRoles(@Argument Long id, @Argument UpdateUserRolesInput input) {
+		return userService.updateRoles(id, input);
 	}
 
 }
