@@ -7,15 +7,17 @@ import com.edgareldy.springgraphqltutorial.graphql.input.AuthPayload;
 import com.edgareldy.springgraphqltutorial.graphql.input.CreateUserInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.LoginInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.RegisterInput;
+import com.edgareldy.springgraphqltutorial.graphql.input.UpdateProfileInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.UpdateUserInput;
+import com.edgareldy.springgraphqltutorial.graphql.input.UpdateUserRolesInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.UserPage;
 
 /**
  * Authentication flows and user administration, including role assignment
  * since assigning a role is a relationship change on the User aggregate.
  * <p>
- * Created by Edgar Muhamyangabo on 8/24/26
- * Author : Edgar Muhamyangabo
+ * Created by edgar.muhamyangabo on 8/24/26
+ * Author : edgar.muhamyangabo
  * Date : 8/24/26
  * Project : spring-graphql-tutorial
  */
@@ -93,13 +95,29 @@ public interface UserService {
 	void delete(Long id);
 
 	/**
-	 * @throws ResourceNotFoundException if the user or the role does not exist
+	 * Adds and/or removes roles from a user in a single idempotent operation.
+	 *
+	 * @throws BusinessRuleException if add and remove are both empty, or an id
+	 *     appears in both lists
+	 * @throws ResourceNotFoundException listing every unknown role id
 	 */
-	User assignRoleToUser(Long userId, Long roleId);
+	User updateRoles(Long userId, UpdateUserRolesInput input);
 
 	/**
-	 * @throws ResourceNotFoundException if the user or the role does not exist
+	 * Issues a new access token and a new refresh token from a valid refresh JWT.
+	 *
+	 * @throws BusinessRuleException if the token is not a refresh token, is
+	 *     blacklisted, or belongs to a disabled/locked account
+	 * @throws ResourceNotFoundException if no user matches the token subject
 	 */
-	User removeRoleFromUser(Long userId, Long roleId);
+	AuthPayload refreshToken(String rawRefreshToken);
+
+	/**
+	 * Updates the calling user's own profile fields.
+	 *
+	 * @throws BusinessRuleException if the new email is already taken
+	 * @throws ResourceNotFoundException if no user has this email
+	 */
+	User updateProfile(String email, UpdateProfileInput input);
 
 }
