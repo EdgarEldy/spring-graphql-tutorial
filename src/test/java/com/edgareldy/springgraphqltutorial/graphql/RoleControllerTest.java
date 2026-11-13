@@ -2,6 +2,7 @@ package com.edgareldy.springgraphqltutorial.graphql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -246,19 +247,19 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 		String resource = "resource-" + UUID.randomUUID();
 		long permissionId = createPermissionAsAdmin(admin, resource, "read");
 
-		admin.document("mutation($roleId: ID!, $permissionId: ID!) { assignPermissionToRole(roleId: $roleId, permissionId: $permissionId) { permissions { resource } } }")
+		admin.document("mutation($roleId: ID!, $add: [ID!]) { updateRolePermissions(roleId: $roleId, input: { add: $add }) { permissions { resource } } }")
 				.variable("roleId", roleId)
-				.variable("permissionId", permissionId)
+				.variable("add", List.of(permissionId))
 				.execute()
-				.path("assignPermissionToRole.permissions[*].resource")
+				.path("updateRolePermissions.permissions[*].resource")
 				.entityList(String.class)
 				.satisfies(resources -> assertThat(resources).contains(resource));
 
-		admin.document("mutation($roleId: ID!, $permissionId: ID!) { removePermissionFromRole(roleId: $roleId, permissionId: $permissionId) { permissions { resource } } }")
+		admin.document("mutation($roleId: ID!, $remove: [ID!]) { updateRolePermissions(roleId: $roleId, input: { remove: $remove }) { permissions { resource } } }")
 				.variable("roleId", roleId)
-				.variable("permissionId", permissionId)
+				.variable("remove", List.of(permissionId))
 				.execute()
-				.path("removePermissionFromRole.permissions[*].resource")
+				.path("updateRolePermissions.permissions[*].resource")
 				.entityList(String.class)
 				.satisfies(resources -> assertThat(resources).doesNotContain(resource));
 	}
@@ -268,9 +269,9 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long roleId = createRoleAsAdmin(admin, uniqueRoleName("permission-target"));
 
-		admin.document("mutation($roleId: ID!, $permissionId: ID!) { assignPermissionToRole(roleId: $roleId, permissionId: $permissionId) { id } }")
+		admin.document("mutation($roleId: ID!, $add: [ID!]) { updateRolePermissions(roleId: $roleId, input: { add: $add }) { id } }")
 				.variable("roleId", roleId)
-				.variable("permissionId", 999_999_999L)
+				.variable("add", List.of(999_999_999L))
 				.execute()
 				.errors()
 				.expect(error -> "NOT_FOUND".equals(error.getExtensions().get("classification")))
@@ -295,11 +296,11 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 		String resource = "article-" + UUID.randomUUID();
 		long permissionId = createPermissionAsAdmin(admin, resource, "edit");
 
-		admin.document("mutation($roleId: ID!, $permissionId: ID!) { assignPermissionToRole(roleId: $roleId, permissionId: $permissionId) { permissions { resource action } } }")
+		admin.document("mutation($roleId: ID!, $add: [ID!]) { updateRolePermissions(roleId: $roleId, input: { add: $add }) { permissions { resource action } } }")
 				.variable("roleId", roleId)
-				.variable("permissionId", permissionId)
+				.variable("add", List.of(permissionId))
 				.execute()
-				.path("assignPermissionToRole.permissions[*].resource")
+				.path("updateRolePermissions.permissions[*].resource")
 				.entityList(String.class)
 				.satisfies(resources -> assertThat(resources).contains(resource));
 
@@ -311,11 +312,11 @@ class RoleControllerTest extends GraphQlIntegrationTestSupport {
 				.entity(Long.class)
 				.get();
 
-		admin.document("mutation($userId: ID!, $roleId: ID!) { assignRoleToUser(userId: $userId, roleId: $roleId) { roles { roleName } } }")
+		admin.document("mutation($userId: ID!, $add: [ID!]) { updateUserRoles(id: $userId, input: { add: $add }) { roles { roleName } } }")
 				.variable("userId", userId)
-				.variable("roleId", roleId)
+				.variable("add", List.of(roleId))
 				.execute()
-				.path("assignRoleToUser.roles[*].roleName")
+				.path("updateUserRoles.roles[*].roleName")
 				.entityList(String.class)
 				.satisfies(roleNames -> assertThat(roleNames).contains(roleName));
 
