@@ -16,6 +16,17 @@ management:
       exposure:
         include: health,info,metrics
 
+spring:
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
 logging:
   level:
     com.edgareldy.springgraphqltutorial: DEBUG
