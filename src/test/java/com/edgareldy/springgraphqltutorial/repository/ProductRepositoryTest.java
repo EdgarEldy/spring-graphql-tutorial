@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.math.BigDecimal;
 
 import com.edgareldy.springgraphqltutorial.TestcontainersConfiguration;
+import com.edgareldy.springgraphqltutorial.config.JpaAuditingConfig;
 import com.edgareldy.springgraphqltutorial.entity.Category;
 import com.edgareldy.springgraphqltutorial.entity.Product;
 import jakarta.persistence.EntityManager;
@@ -32,7 +33,7 @@ import org.springframework.data.domain.PageRequest;
  */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(TestcontainersConfiguration.class)
+@Import({TestcontainersConfiguration.class, JpaAuditingConfig.class})
 class ProductRepositoryTest {
 
 	@Autowired
