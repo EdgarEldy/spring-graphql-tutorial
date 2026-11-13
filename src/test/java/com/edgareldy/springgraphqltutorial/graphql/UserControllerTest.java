@@ -2,6 +2,8 @@ package com.edgareldy.springgraphqltutorial.graphql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
 import com.edgareldy.springgraphqltutorial.entity.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
@@ -243,19 +245,19 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 		long userId = createUserAsAdmin(admin, uniqueEmail("role-assignee"));
 		Role role = roleRepository.save(Role.builder().roleName("REPORTS_VIEWER_" + userId).build());
 
-		admin.document("mutation($userId: ID!, $roleId: ID!) { assignRoleToUser(userId: $userId, roleId: $roleId) { roles { roleName } } }")
+		admin.document("mutation($userId: ID!, $add: [ID!]) { updateUserRoles(id: $userId, input: { add: $add }) { roles { roleName } } }")
 				.variable("userId", userId)
-				.variable("roleId", role.getId())
+				.variable("add", List.of(role.getId()))
 				.execute()
-				.path("assignRoleToUser.roles[*].roleName")
+				.path("updateUserRoles.roles[*].roleName")
 				.entityList(String.class)
 				.satisfies(roleNames -> assertThat(roleNames).contains(role.getRoleName()));
 
-		admin.document("mutation($userId: ID!, $roleId: ID!) { removeRoleFromUser(userId: $userId, roleId: $roleId) { roles { roleName } } }")
+		admin.document("mutation($userId: ID!, $remove: [ID!]) { updateUserRoles(id: $userId, input: { remove: $remove }) { roles { roleName } } }")
 				.variable("userId", userId)
-				.variable("roleId", role.getId())
+				.variable("remove", List.of(role.getId()))
 				.execute()
-				.path("removeRoleFromUser.roles[*].roleName")
+				.path("updateUserRoles.roles[*].roleName")
 				.entityList(String.class)
 				.satisfies(roleNames -> assertThat(roleNames).doesNotContain(role.getRoleName()));
 	}
@@ -265,9 +267,9 @@ class UserControllerTest extends GraphQlIntegrationTestSupport {
 		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
 		long userId = createUserAsAdmin(admin, uniqueEmail("role-target"));
 
-		admin.document("mutation($userId: ID!, $roleId: ID!) { assignRoleToUser(userId: $userId, roleId: $roleId) { id } }")
+		admin.document("mutation($userId: ID!, $add: [ID!]) { updateUserRoles(id: $userId, input: { add: $add }) { id } }")
 				.variable("userId", userId)
-				.variable("roleId", 999_999_999L)
+				.variable("add", List.of(999_999_999L))
 				.execute()
 				.errors()
 				.expect(error -> "NOT_FOUND".equals(error.getExtensions().get("classification")))
