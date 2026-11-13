@@ -56,9 +56,9 @@ class DataLoaderBatchingTest extends GraphQlIntegrationTestSupport {
 				.entity(Long.class)
 				.get();
 
-		admin.document("mutation($userId: ID!, $roleId: ID!) { assignRoleToUser(userId: $userId, roleId: $roleId) { id } }")
+		admin.document("mutation($userId: ID!, $add: [ID!]) { updateUserRoles(id: $userId, input: { add: $add }) { id } }")
 				.variable("userId", userId)
-				.variable("roleId", roleId)
+				.variable("add", List.of(roleId))
 				.executeAndVerify();
 
 		return userId;
@@ -111,9 +111,9 @@ class DataLoaderBatchingTest extends GraphQlIntegrationTestSupport {
 				.entity(Long.class)
 				.get();
 
-		admin.document("mutation($roleId: ID!, $permissionId: ID!) { assignPermissionToRole(roleId: $roleId, permissionId: $permissionId) { id } }")
+		admin.document("mutation($roleId: ID!, $add: [ID!]) { updateRolePermissions(roleId: $roleId, input: { add: $add }) { id } }")
 				.variable("roleId", roleId)
-				.variable("permissionId", permissionId)
+				.variable("add", List.of(permissionId))
 				.executeAndVerify();
 
 		return roleId;
