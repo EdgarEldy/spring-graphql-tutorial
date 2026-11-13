@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.edgareldy.springgraphqltutorial.TestcontainersConfiguration;
+import com.edgareldy.springgraphqltutorial.config.JpaAuditingConfig;
 import com.edgareldy.springgraphqltutorial.entity.Category;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ import org.springframework.dao.DataIntegrityViolationException;
  */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(TestcontainersConfiguration.class)
+@Import({TestcontainersConfiguration.class, JpaAuditingConfig.class})
 class CategoryRepositoryTest {
 
 	@Autowired
