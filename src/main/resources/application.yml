@@ -7,13 +7,6 @@ spring:
   graphql:
     websocket:
       path: /graphql
-
-jwt:
-  secret: ${JWT_SECRET:dev-only-jwt-secret-please-override-in-production-0123456789}
-  expiration-ms: 3600000
-  refresh-expiration-ms: 604800000
-
-spring:
   mail:
     host: ${MAIL_HOST:localhost}
     port: ${MAIL_PORT:1025}
@@ -25,3 +18,8 @@ spring:
           auth: false
           starttls:
             enable: false
+
+jwt:
+  secret: ${JWT_SECRET:dev-only-jwt-secret-please-override-in-production-0123456789}
+  expiration-ms: 3600000
+  refresh-expiration-ms: 604800000
