@@ -26,12 +26,13 @@ class JwtServiceTest {
 
 	private static final String TEST_SECRET = "test-only-secret-key-at-least-256-bits-long-0123456789";
 	private static final long TEST_EXPIRATION_MS = 3_600_000L;
+	private static final long TEST_REFRESH_EXPIRATION_MS = 604_800_000L;
 
 	private JwtService jwtService;
 
 	@BeforeEach
 	void setUp() {
-		jwtService = new JwtService(new JwtProperties(TEST_SECRET, TEST_EXPIRATION_MS));
+		jwtService = new JwtService(new JwtProperties(TEST_SECRET, TEST_EXPIRATION_MS, TEST_REFRESH_EXPIRATION_MS));
 	}
 
 	private User buildUser(String... roleNames) {

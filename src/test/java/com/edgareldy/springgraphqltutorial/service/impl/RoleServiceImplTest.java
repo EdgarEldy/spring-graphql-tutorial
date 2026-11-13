@@ -17,6 +17,7 @@ import com.edgareldy.springgraphqltutorial.entity.Role;
 import com.edgareldy.springgraphqltutorial.exception.BusinessRuleException;
 import com.edgareldy.springgraphqltutorial.exception.ResourceNotFoundException;
 import com.edgareldy.springgraphqltutorial.graphql.input.RoleInput;
+import com.edgareldy.springgraphqltutorial.graphql.input.UpdateRolePermissionsInput;
 import com.edgareldy.springgraphqltutorial.repository.PermissionRepository;
 import com.edgareldy.springgraphqltutorial.repository.RoleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -139,62 +140,67 @@ class RoleServiceImplTest {
 	void _10_ShouldAddPermissionToRole_WhenPermissionIsAssigned() {
 		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(new HashSet<>()).build();
 		Permission permission = Permission.builder().id(2L).resource("product").action("delete").build();
+		UpdateRolePermissionsInput input = new UpdateRolePermissionsInput(List.of(2L), null);
 		when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
-		when(permissionRepository.findById(2L)).thenReturn(Optional.of(permission));
+		when(permissionRepository.findAllById(List.of(2L))).thenReturn(List.of(permission));
 		when(roleRepository.save(role)).thenReturn(role);
 
-		Role result = roleService.assignPermissionToRole(1L, 2L);
+		Role result = roleService.updatePermissions(1L, input);
 
 		assertThat(result.getPermissions()).contains(permission);
 	}
 
 	@Test
 	void _11_ShouldThrowNotFound_WhenAssignmentRoleIsMissing() {
+		UpdateRolePermissionsInput input = new UpdateRolePermissionsInput(List.of(2L), null);
 		when(roleRepository.findById(99L)).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> roleService.assignPermissionToRole(99L, 2L))
+		assertThatThrownBy(() -> roleService.updatePermissions(99L, input))
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
 	void _12_ShouldThrowNotFound_WhenAssignmentPermissionIsMissing() {
 		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(new HashSet<>()).build();
+		UpdateRolePermissionsInput input = new UpdateRolePermissionsInput(List.of(99L), null);
 		when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
-		when(permissionRepository.findById(99L)).thenReturn(Optional.empty());
+		when(permissionRepository.findAllById(List.of(99L))).thenReturn(List.of());
 
-		assertThatThrownBy(() -> roleService.assignPermissionToRole(1L, 99L))
+		assertThatThrownBy(() -> roleService.updatePermissions(1L, input))
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
 	void _13_ShouldRemovePermissionFromRole_WhenPermissionIsRemoved() {
 		Permission permission = Permission.builder().id(2L).resource("product").action("delete").build();
-		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(new java.util.HashSet<>(Set.of(permission)))
-				.build();
+		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(new HashSet<>(Set.of(permission))).build();
+		UpdateRolePermissionsInput input = new UpdateRolePermissionsInput(null, List.of(2L));
 		when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
-		when(permissionRepository.findById(2L)).thenReturn(Optional.of(permission));
+		when(permissionRepository.findAllById(List.of(2L))).thenReturn(List.of(permission));
 		when(roleRepository.save(role)).thenReturn(role);
 
-		Role result = roleService.removePermissionFromRole(1L, 2L);
+		Role result = roleService.updatePermissions(1L, input);
 
 		assertThat(result.getPermissions()).doesNotContain(permission);
 	}
 
 	@Test
 	void _14_ShouldThrowNotFound_WhenRemovalRoleIsMissing() {
+		UpdateRolePermissionsInput input = new UpdateRolePermissionsInput(null, List.of(2L));
 		when(roleRepository.findById(99L)).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> roleService.removePermissionFromRole(99L, 2L))
+		assertThatThrownBy(() -> roleService.updatePermissions(99L, input))
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
 	void _15_ShouldThrowNotFound_WhenRemovalPermissionIsMissing() {
 		Role role = Role.builder().id(1L).roleName("ADMIN").permissions(new HashSet<>()).build();
+		UpdateRolePermissionsInput input = new UpdateRolePermissionsInput(null, List.of(99L));
 		when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
-		when(permissionRepository.findById(99L)).thenReturn(Optional.empty());
+		when(permissionRepository.findAllById(List.of(99L))).thenReturn(List.of());
 
-		assertThatThrownBy(() -> roleService.removePermissionFromRole(1L, 99L))
+		assertThatThrownBy(() -> roleService.updatePermissions(1L, input))
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 

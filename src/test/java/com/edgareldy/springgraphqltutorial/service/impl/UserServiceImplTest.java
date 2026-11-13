@@ -24,7 +24,9 @@ import com.edgareldy.springgraphqltutorial.graphql.input.CreateUserInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.LoginInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.RegisterInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.UpdateUserInput;
+import com.edgareldy.springgraphqltutorial.graphql.input.UpdateUserRolesInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.UserPage;
+import com.edgareldy.springgraphqltutorial.service.EmailService;
 import com.edgareldy.springgraphqltutorial.repository.ActivationTokenRepository;
 import com.edgareldy.springgraphqltutorial.repository.BlacklistedTokenRepository;
 import com.edgareldy.springgraphqltutorial.repository.PasswordResetTokenRepository;
@@ -77,12 +79,15 @@ class UserServiceImplTest {
 	@Mock
 	private JwtService jwtService;
 
+	@Mock
+	private EmailService emailService;
+
 	private UserServiceImpl userService;
 
 	@BeforeEach
 	void setUp() {
 		userService = new UserServiceImpl(userRepository, roleRepository, activationTokenRepository,
-				blacklistedTokenRepository, passwordResetTokenRepository, passwordEncoder, jwtService);
+				blacklistedTokenRepository, passwordResetTokenRepository, passwordEncoder, jwtService, emailService);
 	}
 
 	private User buildUser() {
@@ -106,7 +111,7 @@ class UserServiceImplTest {
 
 		AuthPayload payload = userService.register(input);
 
-		assertThat(payload.token()).isNull();
+		assertThat(payload.accessToken()).isNull();
 		assertThat(payload.user().getEmail()).isEqualTo("ada@example.com");
 		assertThat(payload.user().isEnabled()).isFalse();
 		verify(activationTokenRepository).save(any(ActivationToken.class));
@@ -185,20 +190,20 @@ class UserServiceImplTest {
 	void _07_ShouldReturnToken_WhenCredentialsAreValid() {
 		User user = buildUser();
 		LoginInput input = new LoginInput("ada@example.com", "secret");
-		when(userRepository.findByEmail("ada@example.com")).thenReturn(Optional.of(user));
+		when(userRepository.findByEmailWithRolesAndPermissions("ada@example.com")).thenReturn(Optional.of(user));
 		when(passwordEncoder.matches("secret", "encoded-password")).thenReturn(true);
 		when(jwtService.generateToken(user)).thenReturn("jwt-token");
 
 		AuthPayload payload = userService.login(input);
 
-		assertThat(payload.token()).isEqualTo("jwt-token");
+		assertThat(payload.accessToken()).isEqualTo("jwt-token");
 		assertThat(payload.user()).isEqualTo(user);
 	}
 
 	@Test
 	void _08_ShouldRejectLogin_WhenEmailIsUnknown() {
 		LoginInput input = new LoginInput("missing@example.com", "secret");
-		when(userRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
+		when(userRepository.findByEmailWithRolesAndPermissions("missing@example.com")).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> userService.login(input)).isInstanceOf(BusinessRuleException.class);
 	}
@@ -207,7 +212,7 @@ class UserServiceImplTest {
 	void _09_ShouldRejectLogin_WhenPasswordIsWrong() {
 		User user = buildUser();
 		LoginInput input = new LoginInput("ada@example.com", "wrong");
-		when(userRepository.findByEmail("ada@example.com")).thenReturn(Optional.of(user));
+		when(userRepository.findByEmailWithRolesAndPermissions("ada@example.com")).thenReturn(Optional.of(user));
 		when(passwordEncoder.matches("wrong", "encoded-password")).thenReturn(false);
 
 		assertThatThrownBy(() -> userService.login(input)).isInstanceOf(BusinessRuleException.class);
@@ -218,7 +223,7 @@ class UserServiceImplTest {
 		User user = buildUser();
 		user.setEnabled(false);
 		LoginInput input = new LoginInput("ada@example.com", "secret");
-		when(userRepository.findByEmail("ada@example.com")).thenReturn(Optional.of(user));
+		when(userRepository.findByEmailWithRolesAndPermissions("ada@example.com")).thenReturn(Optional.of(user));
 		when(passwordEncoder.matches("secret", "encoded-password")).thenReturn(true);
 
 		assertThatThrownBy(() -> userService.login(input)).isInstanceOf(BusinessRuleException.class);
@@ -229,7 +234,7 @@ class UserServiceImplTest {
 		User user = buildUser();
 		user.setAccountLocked(true);
 		LoginInput input = new LoginInput("ada@example.com", "secret");
-		when(userRepository.findByEmail("ada@example.com")).thenReturn(Optional.of(user));
+		when(userRepository.findByEmailWithRolesAndPermissions("ada@example.com")).thenReturn(Optional.of(user));
 		when(passwordEncoder.matches("secret", "encoded-password")).thenReturn(true);
 
 		assertThatThrownBy(() -> userService.login(input)).isInstanceOf(BusinessRuleException.class);
@@ -484,30 +489,33 @@ class UserServiceImplTest {
 	void _34_ShouldAddRoleToUser_WhenRoleIsAssigned() {
 		User user = buildUser();
 		Role role = Role.builder().id(2L).roleName("ADMIN").permissions(Set.of()).build();
+		UpdateUserRolesInput input = new UpdateUserRolesInput(List.of(2L), null);
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-		when(roleRepository.findById(2L)).thenReturn(Optional.of(role));
+		when(roleRepository.findAllById(List.of(2L))).thenReturn(List.of(role));
 		when(userRepository.save(user)).thenReturn(user);
 
-		User result = userService.assignRoleToUser(1L, 2L);
+		User result = userService.updateRoles(1L, input);
 
 		assertThat(result.getRoles()).contains(role);
 	}
 
 	@Test
 	void _35_ShouldThrowNotFound_WhenAssignmentUserIsMissing() {
+		UpdateUserRolesInput input = new UpdateUserRolesInput(List.of(2L), null);
 		when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> userService.assignRoleToUser(99L, 2L))
+		assertThatThrownBy(() -> userService.updateRoles(99L, input))
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
 	void _36_ShouldThrowNotFound_WhenAssignmentRoleIsMissing() {
 		User user = buildUser();
+		UpdateUserRolesInput input = new UpdateUserRolesInput(List.of(99L), null);
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-		when(roleRepository.findById(99L)).thenReturn(Optional.empty());
+		when(roleRepository.findAllById(List.of(99L))).thenReturn(List.of());
 
-		assertThatThrownBy(() -> userService.assignRoleToUser(1L, 99L))
+		assertThatThrownBy(() -> userService.updateRoles(1L, input))
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 
@@ -516,30 +524,33 @@ class UserServiceImplTest {
 		Role role = Role.builder().id(2L).roleName("ADMIN").permissions(Set.of()).build();
 		User user = buildUser();
 		user.getRoles().add(role);
+		UpdateUserRolesInput input = new UpdateUserRolesInput(null, List.of(2L));
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-		when(roleRepository.findById(2L)).thenReturn(Optional.of(role));
+		when(roleRepository.findAllById(List.of(2L))).thenReturn(List.of(role));
 		when(userRepository.save(user)).thenReturn(user);
 
-		User result = userService.removeRoleFromUser(1L, 2L);
+		User result = userService.updateRoles(1L, input);
 
 		assertThat(result.getRoles()).doesNotContain(role);
 	}
 
 	@Test
 	void _38_ShouldThrowNotFound_WhenRemovalUserIsMissing() {
+		UpdateUserRolesInput input = new UpdateUserRolesInput(null, List.of(2L));
 		when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> userService.removeRoleFromUser(99L, 2L))
+		assertThatThrownBy(() -> userService.updateRoles(99L, input))
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 
 	@Test
 	void _39_ShouldThrowNotFound_WhenRemovalRoleIsMissing() {
 		User user = buildUser();
+		UpdateUserRolesInput input = new UpdateUserRolesInput(null, List.of(99L));
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-		when(roleRepository.findById(99L)).thenReturn(Optional.empty());
+		when(roleRepository.findAllById(List.of(99L))).thenReturn(List.of());
 
-		assertThatThrownBy(() -> userService.removeRoleFromUser(1L, 99L))
+		assertThatThrownBy(() -> userService.updateRoles(1L, input))
 				.isInstanceOf(ResourceNotFoundException.class);
 	}
 
