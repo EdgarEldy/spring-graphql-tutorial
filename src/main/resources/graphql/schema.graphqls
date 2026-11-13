@@ -165,6 +165,7 @@ type Product {
     id: ID!
     productName: String!
     unitPrice: Float!
+    version: Int!
     category: Category!
 }
 
