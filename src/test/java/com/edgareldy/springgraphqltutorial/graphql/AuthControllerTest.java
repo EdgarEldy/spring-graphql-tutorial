@@ -39,7 +39,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	private static final String REGISTER_MUTATION = """
 			mutation Register($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
 			  register(input: { firstName: $firstName, lastName: $lastName, email: $email, password: $password }) {
-			    token
+			    accessToken
 			    user {
 			      id
 			      email
@@ -146,7 +146,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 		String email = uniqueEmail("inactive");
 		register(email);
 
-		graphQlTester.document("mutation($email: String!, $password: String!) { login(input: { email: $email, password: $password }) { token } }")
+		graphQlTester.document("mutation($email: String!, $password: String!) { login(input: { email: $email, password: $password }) { accessToken } }")
 				.variable("email", email)
 				.variable("password", "secret-password")
 				.execute()
@@ -160,7 +160,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 		String email = uniqueEmail("wrong-password");
 		createEnabledUser(email, "correct-password");
 
-		graphQlTester.document("mutation($email: String!, $password: String!) { login(input: { email: $email, password: $password }) { token } }")
+		graphQlTester.document("mutation($email: String!, $password: String!) { login(input: { email: $email, password: $password }) { accessToken } }")
 				.variable("email", email)
 				.variable("password", "wrong-password")
 				.execute()
