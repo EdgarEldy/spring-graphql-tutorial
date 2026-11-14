@@ -37,13 +37,16 @@ spring.mail:
 ```yaml
 spring:
   datasource:
-    url: ${DB_URL}             # required - no default
-    username: ${DB_USERNAME}   # required - no default
-    password: ${DB_PASSWORD}   # required - no default
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/spring_graphql_tutorial}
+    username: ${DB_USERNAME:spring_graphql_tutorial}
+    password: ${DB_PASSWORD:spring_graphql_tutorial}
   graphql:
     graphiql:
       enabled: true
       path: /graphiql           # interactive explorer
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
 
 management:
   endpoints:
@@ -56,9 +59,11 @@ logging:
     com.edgareldy.springgraphqltutorial: DEBUG
 ```
 
-The dev profile requires the three database env vars to be set before starting. It does
-not embed defaults like JDBC connection strings - this avoids silently connecting to a
-wrong database.
+The dev profile ships with sensible defaults for the database connection and the local
+mail server so the application can be started with no environment variables at all,
+provided the database `spring_graphql_tutorial` exists on `localhost:5432`.
+See [getting-started.md](getting-started.md) for instructions on creating that database
+in an existing PostgreSQL container or a Docker Compose service.
 
 ## `application-prod.yml`
 
