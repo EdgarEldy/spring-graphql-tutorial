@@ -1,6 +1,6 @@
 # Only the app is defined here. PostgreSQL is not started by this file: this
 # machine already runs a shared postgres_main container (used across several
-# tutorial projects) with a dedicated spring_graphql_tutorial database
+# tutorial projects) with a dedicated spring_graphql_db database
 # created on it, so a project-local db service would be a redundant second
 # Postgres instance rather than a genuine dependency of this project.
 # host.docker.internal lets the app container reach that host-level
@@ -11,9 +11,9 @@ services:
     image: spring-graphql-tutorial:latest
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_URL: ${DB_URL:-jdbc:postgresql://host.docker.internal:5432/spring_graphql_tutorial}
-      DB_USERNAME: ${DB_USERNAME:-admin}
-      DB_PASSWORD: ${DB_PASSWORD:-admin}
+      DB_URL: ${DB_URL:-jdbc:postgresql://host.docker.internal:5432/spring_graphql_db}
+      DB_USERNAME: ${DB_USERNAME:-spring_graphql_db}
+      DB_PASSWORD: ${DB_PASSWORD:-spring_graphql_db}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
