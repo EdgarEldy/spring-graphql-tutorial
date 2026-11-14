@@ -330,4 +330,48 @@ class ProductControllerTest extends GraphQlIntegrationTestSupport {
 				.verify();
 	}
 
+	@Test
+	void _15_ShouldFilterByProductName_WhenProductNameArgIsGiven() {
+		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
+		long categoryId = createCategoryAsAdmin(admin, uniqueName("books"));
+		String uniqueSuffix = UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+		String bookName = "book-" + uniqueSuffix;
+		String toyName = "toy-" + uniqueSuffix;
+		createProductAsAdmin(admin, bookName, 39.99, categoryId);
+		createProductAsAdmin(admin, toyName, 19.99, categoryId);
+
+		graphQlTester.document("query($productName: String, $size: Int) { products(productName: $productName, size: $size) { content { productName } } }")
+				.variable("productName", "book-" + uniqueSuffix)
+				.variable("size", 500)
+				.execute()
+				.path("products.content[*].productName")
+				.entityList(String.class)
+				.satisfies(names -> {
+					assertThat(names).contains(bookName);
+					assertThat(names).doesNotContain(toyName);
+				});
+	}
+
+	@Test
+	void _16_ShouldExcludeProductsOutsidePriceRange_WhenMinMaxPriceArgsAreGiven() {
+		HttpGraphQlTester admin = authenticatedTester(bootstrapAdminToken());
+		long categoryId = createCategoryAsAdmin(admin, uniqueName("range-test"));
+		String cheapName = uniqueName("very-cheap");
+		String expensiveName = uniqueName("very-expensive");
+		createProductAsAdmin(admin, cheapName, 2.00, categoryId);
+		createProductAsAdmin(admin, expensiveName, 999.00, categoryId);
+
+		graphQlTester.document("query($minPrice: Float, $maxPrice: Float, $size: Int) { products(minPrice: $minPrice, maxPrice: $maxPrice, size: $size) { content { productName } } }")
+				.variable("minPrice", 10.0)
+				.variable("maxPrice", 500.0)
+				.variable("size", 500)
+				.execute()
+				.path("products.content[*].productName")
+				.entityList(String.class)
+				.satisfies(names -> {
+					assertThat(names).doesNotContain(cheapName);
+					assertThat(names).doesNotContain(expensiveName);
+				});
+	}
+
 }

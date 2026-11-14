@@ -35,7 +35,8 @@ collection:
                   "firstName": "Ada",
                   "lastName": "Lovelace",
                   "email": "ada@example.com",
-                  "password": "Password1@"
+                  "password": "Password1@",
+                  "confirmPassword": "Password1@"
                 }
               }
             }
@@ -98,7 +99,7 @@ collection:
               "variables": {
                 "input": {
                   "email": "admin@example.com",
-                  "password": "Admin1@seed"
+                  "password": "Admin1234!"
                 }
               }
             }
@@ -497,6 +498,71 @@ collection:
             {
               "query": "query ($categoryId: ID, $page: Int, $size: Int) { products(categoryId: $categoryId, page: $page, size: $size) { content { id productName unitPrice version category { id categoryName } } totalElements totalPages page size } }",
               "variables": {
+                "page": 0,
+                "size": 10
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Get products - filter by name
+        meta:
+          id: req_sgt_prod_filter_name_a1b2c3d4e5f6478c
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200650000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($productName: String, $page: Int, $size: Int) { products(productName: $productName, page: $page, size: $size) { content { id productName unitPrice version category { id categoryName } } totalElements totalPages page size } }",
+              "variables": {
+                "productName": "keyboard",
+                "page": 0,
+                "size": 10
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Get products - filter by price range
+        meta:
+          id: req_sgt_prod_filter_price_a1b2c3d4e5f6478d
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200625000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($minPrice: Float, $maxPrice: Float, $page: Int, $size: Int) { products(minPrice: $minPrice, maxPrice: $maxPrice, page: $page, size: $size) { content { id productName unitPrice version category { id categoryName } } totalElements totalPages page size } }",
+              "variables": {
+                "minPrice": 10.0,
+                "maxPrice": 100.0,
                 "page": 0,
                 "size": 10
               }
