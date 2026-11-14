@@ -37,9 +37,9 @@ spring.mail:
 ```yaml
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/spring_graphql_tutorial}
-    username: ${DB_USERNAME:spring_graphql_tutorial}
-    password: ${DB_PASSWORD:spring_graphql_tutorial}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/spring_graphql_db}
+    username: ${DB_USERNAME:spring_graphql_db}
+    password: ${DB_PASSWORD:spring_graphql_db}
   graphql:
     graphiql:
       enabled: true
@@ -61,7 +61,7 @@ logging:
 
 The dev profile ships with sensible defaults for the database connection and the local
 mail server so the application can be started with no environment variables at all,
-provided the database `spring_graphql_tutorial` exists on `localhost:5432`.
+provided the database `spring_graphql_db` exists on `localhost:5432`.
 See [getting-started.md](getting-started.md) for instructions on creating that database
 in an existing PostgreSQL container or a Docker Compose service.
 

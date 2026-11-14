@@ -14,7 +14,7 @@ All commands below use it; replace with `mvn` if you have Maven 3.9+ installed.
 
 ## Setting up the PostgreSQL database
 
-The application expects a PostgreSQL 16 database named `spring_graphql_tutorial`.
+The application expects a PostgreSQL 16 database named `spring_graphql_db`.
 Flyway runs all migrations automatically on first startup, so you only need an
 empty database before the first run.
 
@@ -22,10 +22,10 @@ empty database before the first run.
 
 ```bash
 docker run -d \
-  --name spring_graphql_tutorial_db \
-  -e POSTGRES_DB=spring_graphql_tutorial \
-  -e POSTGRES_USER=spring_graphql_tutorial \
-  -e POSTGRES_PASSWORD=spring_graphql_tutorial \
+  --name spring_graphql_db \
+  -e POSTGRES_DB=spring_graphql_db \
+  -e POSTGRES_USER=spring_graphql_db \
+  -e POSTGRES_PASSWORD=spring_graphql_db \
   -p 5432:5432 \
   postgres:16
 ```
@@ -43,8 +43,8 @@ docker exec -it postgres_main psql -U postgres
 Then run these SQL statements in the psql prompt:
 
 ```sql
-CREATE USER spring_graphql_tutorial WITH PASSWORD 'spring_graphql_tutorial';
-CREATE DATABASE spring_graphql_tutorial OWNER spring_graphql_tutorial;
+CREATE USER spring_graphql_db WITH PASSWORD 'spring_graphql_db';
+CREATE DATABASE spring_graphql_db OWNER spring_graphql_db;
 \q
 ```
 
@@ -52,8 +52,8 @@ Alternatively, as a one-liner without an interactive shell:
 
 ```bash
 docker exec postgres_main psql -U postgres \
-  -c "CREATE USER spring_graphql_tutorial WITH PASSWORD 'spring_graphql_tutorial';" \
-  -c "CREATE DATABASE spring_graphql_tutorial OWNER spring_graphql_tutorial;"
+  -c "CREATE USER spring_graphql_db WITH PASSWORD 'spring_graphql_db';" \
+  -c "CREATE DATABASE spring_graphql_db OWNER spring_graphql_db;"
 ```
 
 ### Option C - Native PostgreSQL installation
@@ -62,8 +62,8 @@ Create the user and database with psql directly:
 
 ```bash
 psql -U postgres \
-  -c "CREATE USER spring_graphql_tutorial WITH PASSWORD 'spring_graphql_tutorial';" \
-  -c "CREATE DATABASE spring_graphql_tutorial OWNER spring_graphql_tutorial;"
+  -c "CREATE USER spring_graphql_db WITH PASSWORD 'spring_graphql_db';" \
+  -c "CREATE DATABASE spring_graphql_db OWNER spring_graphql_db;"
 ```
 
 ---
@@ -75,9 +75,9 @@ need to be set when connecting to the database created in the previous step:
 
 | Property | Default value |
 |---|---|
-| `DB_URL` | `jdbc:postgresql://localhost:5432/spring_graphql_tutorial` |
-| `DB_USERNAME` | `spring_graphql_tutorial` |
-| `DB_PASSWORD` | `spring_graphql_tutorial` |
+| `DB_URL` | `jdbc:postgresql://localhost:5432/spring_graphql_db` |
+| `DB_USERNAME` | `spring_graphql_db` |
+| `DB_PASSWORD` | `spring_graphql_db` |
 
 Start the application in dev mode:
 
@@ -116,9 +116,9 @@ docker compose up --build
 Override the connection if your PostgreSQL runs on a non-default host or port:
 
 ```bash
-DB_URL=jdbc:postgresql://host.docker.internal:5432/spring_graphql_tutorial \
-DB_USERNAME=spring_graphql_tutorial \
-DB_PASSWORD=spring_graphql_tutorial \
+DB_URL=jdbc:postgresql://host.docker.internal:5432/spring_graphql_db \
+DB_USERNAME=spring_graphql_db \
+DB_PASSWORD=spring_graphql_db \
 docker compose up --build
 ```
 
