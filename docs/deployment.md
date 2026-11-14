@@ -38,9 +38,9 @@ The service starts with `SPRING_PROFILES_ACTIVE=prod`.
 | Variable | Purpose | Prod default in Compose |
 |---|---|---|
 | `SPRING_PROFILES_ACTIVE` | Activates the prod configuration | `prod` (hardcoded in Compose) |
-| `DB_URL` | JDBC connection URL | `jdbc:postgresql://host.docker.internal:5432/spring_graphql_tutorial` |
-| `DB_USERNAME` | Database username | `admin` |
-| `DB_PASSWORD` | Database password | `admin` |
+| `DB_URL` | JDBC connection URL | `jdbc:postgresql://host.docker.internal:5432/spring_graphql_db` |
+| `DB_USERNAME` | Database username | `spring_graphql_db` |
+| `DB_PASSWORD` | Database password | `spring_graphql_db` |
 | `JWT_SECRET` | HMAC-SHA key for JWT signing | *(none, must be set in prod)* |
 
 In a real deployment, set `JWT_SECRET` to a long random string (at least 256 bits).
