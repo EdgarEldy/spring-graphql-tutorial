@@ -32,6 +32,7 @@ import com.edgareldy.springgraphqltutorial.repository.RoleRepository;
 import com.edgareldy.springgraphqltutorial.repository.UserRepository;
 import com.edgareldy.springgraphqltutorial.security.JwtService;
 import com.edgareldy.springgraphqltutorial.service.EmailService;
+import com.edgareldy.springgraphqltutorial.service.RefreshTokenService;
 import com.edgareldy.springgraphqltutorial.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,12 +60,14 @@ public class UserServiceImpl implements UserService {
 	private final JwtService jwtService;
 	private final EmailService emailService;
 	private final Validator validator;
+	private final RefreshTokenService refreshTokenService;
 
 	public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
 			ActivationTokenRepository activationTokenRepository,
 			BlacklistedTokenRepository blacklistedTokenRepository,
 			PasswordResetTokenRepository passwordResetTokenRepository, PasswordEncoder passwordEncoder,
-			JwtService jwtService, EmailService emailService, Validator validator) {
+			JwtService jwtService, EmailService emailService, Validator validator,
+			RefreshTokenService refreshTokenService) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.activationTokenRepository = activationTokenRepository;
@@ -74,6 +77,7 @@ public class UserServiceImpl implements UserService {
 		this.jwtService = jwtService;
 		this.emailService = emailService;
 		this.validator = validator;
+		this.refreshTokenService = refreshTokenService;
 	}
 
 	@Override
@@ -144,6 +148,7 @@ public class UserServiceImpl implements UserService {
 		}
 		String accessToken = jwtService.generateToken(user);
 		String refreshToken = jwtService.generateRefreshToken(user);
+		refreshTokenService.create(user, refreshToken);
 		return new AuthPayload(accessToken, "Bearer", refreshToken, jwtService.getExpirationMs(), user);
 	}
 
@@ -166,6 +171,7 @@ public class UserServiceImpl implements UserService {
 				.expiresAt(jwtService.extractExpiration(rawToken))
 				.build();
 		blacklistedTokenRepository.save(blacklistedToken);
+		refreshTokenService.deleteByUser(user);
 		return true;
 	}
 
@@ -302,14 +308,17 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public AuthPayload refreshToken(String rawRefreshToken) {
 		if (!jwtService.isRefreshToken(rawRefreshToken)) {
 			throw new BusinessRuleException("Invalid refresh token");
 		}
-		String jti = jwtService.extractJti(rawRefreshToken);
-		if (blacklistedTokenRepository.existsByJti(jti)) {
-			throw new BusinessRuleException("Refresh token has been revoked");
+		// Validate the token exists in DB - throws ResourceNotFoundException if revoked or expired.
+		com.edgareldy.springgraphqltutorial.entity.RefreshToken stored =
+				refreshTokenService.findByToken(rawRefreshToken);
+		if (stored.getExpiresAt().isBefore(java.time.LocalDateTime.now())) {
+			refreshTokenService.deleteByUser(stored.getUser());
+			throw new BusinessRuleException("Refresh token has expired");
 		}
 		String email = jwtService.extractEmail(rawRefreshToken);
 		User user = userRepository.findByEmailWithRolesAndPermissions(email)
@@ -320,8 +329,11 @@ public class UserServiceImpl implements UserService {
 		if (user.isAccountLocked()) {
 			throw new BusinessRuleException("Account is locked");
 		}
+		// Rotate: delete the old DB record and issue a fresh pair.
+		refreshTokenService.deleteByUser(user);
 		String newAccessToken = jwtService.generateToken(user);
 		String newRefreshToken = jwtService.generateRefreshToken(user);
+		refreshTokenService.create(user, newRefreshToken);
 		return new AuthPayload(newAccessToken, "Bearer", newRefreshToken, jwtService.getExpirationMs(), user);
 	}
 
