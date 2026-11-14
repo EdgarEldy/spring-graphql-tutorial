@@ -34,10 +34,12 @@ public class ProductController {
 	}
 
 	@QueryMapping
-	public ProductPage products(@Argument Long categoryId, @Argument Integer page, @Argument Integer size) {
+	public ProductPage products(@Argument Long categoryId, @Argument String productName,
+			@Argument Double minPrice, @Argument Double maxPrice,
+			@Argument Integer page, @Argument Integer size) {
 		int resolvedPage = page != null ? page : DEFAULT_PAGE;
 		int resolvedSize = size != null ? size : DEFAULT_SIZE;
-		return productService.findAll(categoryId, resolvedPage, resolvedSize);
+		return productService.findAll(categoryId, productName, minPrice, maxPrice, resolvedPage, resolvedSize);
 	}
 
 	@QueryMapping
