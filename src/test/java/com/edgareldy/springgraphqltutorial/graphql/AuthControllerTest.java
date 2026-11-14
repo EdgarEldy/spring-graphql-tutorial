@@ -90,7 +90,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 				.entity(Boolean.class)
 				.isEqualTo(true);
 
-		String jwt = login(email, "secret-password");
+		String jwt = login(email, "Password1@");
 		assertThat(jwt).isNotBlank();
 
 		authenticatedTester(jwt).document("{ me { email enabled } }")
@@ -109,7 +109,8 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 				.variable("firstName", "Second")
 				.variable("lastName", "Person")
 				.variable("email", email)
-				.variable("password", "another-secret")
+				.variable("password", "Password1@")
+				.variable("confirmPassword", "Password1@")
 				.execute()
 				.errors()
 				.expect(error -> "BAD_REQUEST".equals(error.getExtensions().get("classification")))
@@ -174,7 +175,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	void _07_ShouldTreatFurtherRequestsAsAnonymous_WhenTokenIsBlacklistedByLogout() {
 		String email = uniqueEmail("logout");
 		createEnabledUser(email, "secret-password");
-		String jwt = login(email, "secret-password");
+		String jwt = login(email, "Password1@");
 
 		authenticatedTester(jwt).document("mutation { logout }")
 				.execute()
@@ -265,7 +266,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	void _14_ShouldReturnAuthenticatedUser_WhenMeIsQueriedWithValidToken() {
 		String email = uniqueEmail("me");
 		createEnabledUser(email, "secret-password");
-		String jwt = login(email, "secret-password");
+		String jwt = login(email, "Password1@");
 
 		HttpGraphQlTester authenticated = authenticatedTester(jwt);
 		authenticated.document("{ me { email } }")
