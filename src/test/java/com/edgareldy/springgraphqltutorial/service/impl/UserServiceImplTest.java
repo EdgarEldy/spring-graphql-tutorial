@@ -33,6 +33,8 @@ import com.edgareldy.springgraphqltutorial.repository.PasswordResetTokenReposito
 import com.edgareldy.springgraphqltutorial.repository.RoleRepository;
 import com.edgareldy.springgraphqltutorial.repository.UserRepository;
 import com.edgareldy.springgraphqltutorial.security.JwtService;
+import com.edgareldy.springgraphqltutorial.service.RefreshTokenService;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,12 +84,19 @@ class UserServiceImplTest {
 	@Mock
 	private EmailService emailService;
 
+	@Mock
+	private Validator validator;
+
+	@Mock
+	private RefreshTokenService refreshTokenService;
+
 	private UserServiceImpl userService;
 
 	@BeforeEach
 	void setUp() {
 		userService = new UserServiceImpl(userRepository, roleRepository, activationTokenRepository,
-				blacklistedTokenRepository, passwordResetTokenRepository, passwordEncoder, jwtService, emailService);
+				blacklistedTokenRepository, passwordResetTokenRepository, passwordEncoder, jwtService, emailService,
+				validator, refreshTokenService);
 	}
 
 	private User buildUser() {
@@ -104,7 +113,7 @@ class UserServiceImplTest {
 
 	@Test
 	void _01_ShouldCreateDisabledUserAndActivationToken_WhenUserRegisters() {
-		RegisterInput input = new RegisterInput("Ada", "Lovelace", "ada@example.com", "secret");
+		RegisterInput input = new RegisterInput("Ada", "Lovelace", "ada@example.com", "Password1@", "Password1@");
 		when(userRepository.existsByEmail("ada@example.com")).thenReturn(false);
 		when(passwordEncoder.encode("secret")).thenReturn("encoded-password");
 		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -119,7 +128,7 @@ class UserServiceImplTest {
 
 	@Test
 	void _02_ShouldRejectRegistration_WhenEmailIsDuplicate() {
-		RegisterInput input = new RegisterInput("Ada", "Lovelace", "ada@example.com", "secret");
+		RegisterInput input = new RegisterInput("Ada", "Lovelace", "ada@example.com", "Password1@", "Password1@");
 		when(userRepository.existsByEmail("ada@example.com")).thenReturn(true);
 
 		assertThatThrownBy(() -> userService.register(input)).isInstanceOf(BusinessRuleException.class);
