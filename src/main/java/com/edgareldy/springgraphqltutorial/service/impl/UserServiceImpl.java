@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
 				.expiresAt(LocalDateTime.now().plusHours(24))
 				.build();
 		activationTokenRepository.save(activationToken);
-		emailService.sendActivationEmail(user.getEmail(), activationToken.getToken());
+		emailService.sendActivationEmail(user, activationToken.getToken());
 
 		// No token: the account is disabled until activateAccount runs, so a JWT
 		// issued here would authenticate an account that cannot use it yet.
@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService {
 					.expiryDate(LocalDateTime.now().plusHours(1))
 					.build();
 			passwordResetTokenRepository.save(resetToken);
-			emailService.sendPasswordResetEmail(user.getEmail(), resetToken.getToken());
+			emailService.sendPasswordResetEmail(user, resetToken.getToken());
 			return true;
 		}).orElse(false);
 	}
