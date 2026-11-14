@@ -131,7 +131,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public AuthPayload login(LoginInput input) {
 		// Same message whether the email is unknown or the password is wrong, so
 		// a caller can never use this mutation to probe which emails are registered.
