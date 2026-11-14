@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 
 /**
  * Unit tests for ProductServiceImpl: every public method's nominal path, and
@@ -68,7 +69,7 @@ class ProductServiceImplTest {
 		when(productRepository.findAll(PageRequest.of(0, 20)))
 				.thenReturn(new PageImpl<>(List.of(product), PageRequest.of(0, 20), 1));
 
-		ProductPage page = productService.findAll(null, 0, 20);
+		ProductPage page = productService.findAll(null, null, null, null, 0, 20);
 
 		assertThat(page.content()).containsExactly(product);
 		assertThat(page.totalElements()).isEqualTo(1);
@@ -84,7 +85,7 @@ class ProductServiceImplTest {
 		when(productRepository.findByCategoryId(1L, PageRequest.of(0, 20)))
 				.thenReturn(new PageImpl<>(List.of(product), PageRequest.of(0, 20), 1));
 
-		ProductPage page = productService.findAll(1L, 0, 20);
+		ProductPage page = productService.findAll(1L, null, null, null, 0, 20);
 
 		assertThat(page.content()).containsExactly(product);
 		verify(productRepository, never()).findAll(any(PageRequest.class));
@@ -186,6 +187,35 @@ class ProductServiceImplTest {
 		assertThatThrownBy(() -> productService.delete(99L)).isInstanceOf(ResourceNotFoundException.class);
 
 		verify(productRepository, never()).delete(any(Product.class));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void _12_ShouldUseSpecificationPath_WhenProductNameFilterIsGiven() {
+		Product product = cleanCode(books());
+		when(productRepository.findAll(any(Specification.class), any(PageRequest.class)))
+				.thenReturn(new PageImpl<>(List.of(product), PageRequest.of(0, 20), 1));
+
+		ProductPage page = productService.findAll(null, "clean", null, null, 0, 20);
+
+		assertThat(page.content()).containsExactly(product);
+		verify(productRepository).findAll(any(Specification.class), any(PageRequest.class));
+		verify(productRepository, never()).findAll(any(PageRequest.class));
+		verify(productRepository, never()).findByCategoryId(any(), any());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void _13_ShouldUseSpecificationPath_WhenPriceRangeIsGiven() {
+		Product product = cleanCode(books());
+		when(productRepository.findAll(any(Specification.class), any(PageRequest.class)))
+				.thenReturn(new PageImpl<>(List.of(product), PageRequest.of(0, 20), 1));
+
+		ProductPage page = productService.findAll(null, null, 10.0, 50.0, 0, 20);
+
+		assertThat(page.content()).containsExactly(product);
+		verify(productRepository).findAll(any(Specification.class), any(PageRequest.class));
+		verify(productRepository, never()).findAll(any(PageRequest.class));
 	}
 
 }
