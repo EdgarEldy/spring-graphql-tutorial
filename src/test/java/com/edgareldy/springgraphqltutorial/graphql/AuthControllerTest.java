@@ -37,8 +37,8 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	private PasswordResetTokenRepository passwordResetTokenRepository;
 
 	private static final String REGISTER_MUTATION = """
-			mutation Register($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
-			  register(input: { firstName: $firstName, lastName: $lastName, email: $email, password: $password }) {
+			mutation Register($firstName: String!, $lastName: String!, $email: String!, $password: String!, $confirmPassword: String!) {
+			  register(input: { firstName: $firstName, lastName: $lastName, email: $email, password: $password, confirmPassword: $confirmPassword }) {
 			    accessToken
 			    user {
 			      id
@@ -54,7 +54,8 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 				.variable("firstName", "Ada")
 				.variable("lastName", "Lovelace")
 				.variable("email", email)
-				.variable("password", "secret-password")
+				.variable("password", "Password1@")
+				.variable("confirmPassword", "Password1@")
 				.execute()
 				.path("register.user.email")
 				.entity(String.class)
@@ -89,7 +90,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 				.entity(Boolean.class)
 				.isEqualTo(true);
 
-		String jwt = login(email, "secret-password");
+		String jwt = login(email, "Password1@");
 		assertThat(jwt).isNotBlank();
 
 		authenticatedTester(jwt).document("{ me { email enabled } }")
@@ -108,7 +109,8 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 				.variable("firstName", "Second")
 				.variable("lastName", "Person")
 				.variable("email", email)
-				.variable("password", "another-secret")
+				.variable("password", "Password1@")
+				.variable("confirmPassword", "Password1@")
 				.execute()
 				.errors()
 				.expect(error -> "BAD_REQUEST".equals(error.getExtensions().get("classification")))

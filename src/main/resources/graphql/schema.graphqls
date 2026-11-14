@@ -107,6 +107,7 @@ input RegisterInput {
     lastName: String!
     email: String!
     password: String!
+    confirmPassword: String!
 }
 
 input LoginInput {
