@@ -99,7 +99,7 @@ collection:
               "variables": {
                 "input": {
                   "email": "admin@example.com",
-                  "password": "Admin1@seed"
+                  "password": "Admin1234!"
                 }
               }
             }
