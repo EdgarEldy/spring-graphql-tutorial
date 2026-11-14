@@ -56,7 +56,7 @@ public class DataSeeder implements CommandLineRunner {
                         .firstName("Admin")
                         .lastName("User")
                         .email("admin@example.com")
-                        .password(passwordEncoder.encode("Admin1@seed"))
+                        .password(passwordEncoder.encode("Admin1234!"))
                         .enabled(true)
                         .accountLocked(false)
                         .build());
@@ -72,14 +72,14 @@ public class DataSeeder implements CommandLineRunner {
                     Category.builder().categoryName("Books").build());
 
             productRepository.save(Product.builder()
-                    .category(electronics).productName("Laptop")
-                    .unitPrice(new BigDecimal("999.99")).build());
+                    .category(electronics).productName("Mechanical Keyboard")
+                    .unitPrice(new BigDecimal("79.99")).build());
             productRepository.save(Product.builder()
                     .category(electronics).productName("Wireless Mouse")
                     .unitPrice(new BigDecimal("29.99")).build());
             productRepository.save(Product.builder()
-                    .category(books).productName("Learning Java")
-                    .unitPrice(new BigDecimal("49.99")).build());
+                    .category(books).productName("Effective Java")
+                    .unitPrice(new BigDecimal("45.50")).build());
         }
     }
 
