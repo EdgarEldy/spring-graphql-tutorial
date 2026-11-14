@@ -33,6 +33,9 @@ import com.edgareldy.springgraphqltutorial.repository.PasswordResetTokenReposito
 import com.edgareldy.springgraphqltutorial.repository.RoleRepository;
 import com.edgareldy.springgraphqltutorial.repository.UserRepository;
 import com.edgareldy.springgraphqltutorial.security.JwtService;
+import com.edgareldy.springgraphqltutorial.service.RefreshTokenService;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,12 +85,19 @@ class UserServiceImplTest {
 	@Mock
 	private EmailService emailService;
 
+	@Mock
+	private Validator validator;
+
+	@Mock
+	private RefreshTokenService refreshTokenService;
+
 	private UserServiceImpl userService;
 
 	@BeforeEach
 	void setUp() {
 		userService = new UserServiceImpl(userRepository, roleRepository, activationTokenRepository,
-				blacklistedTokenRepository, passwordResetTokenRepository, passwordEncoder, jwtService, emailService);
+				blacklistedTokenRepository, passwordResetTokenRepository, passwordEncoder, jwtService, emailService,
+				validator, refreshTokenService);
 	}
 
 	private User buildUser() {
@@ -104,9 +114,8 @@ class UserServiceImplTest {
 
 	@Test
 	void _01_ShouldCreateDisabledUserAndActivationToken_WhenUserRegisters() {
-		RegisterInput input = new RegisterInput("Ada", "Lovelace", "ada@example.com", "secret");
-		when(userRepository.existsByEmail("ada@example.com")).thenReturn(false);
-		when(passwordEncoder.encode("secret")).thenReturn("encoded-password");
+		RegisterInput input = new RegisterInput("Ada", "Lovelace", "ada@example.com", "Password1@", "Password1@");
+		when(passwordEncoder.encode("Password1@")).thenReturn("encoded-password");
 		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 		AuthPayload payload = userService.register(input);
@@ -118,9 +127,12 @@ class UserServiceImplTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void _02_ShouldRejectRegistration_WhenEmailIsDuplicate() {
-		RegisterInput input = new RegisterInput("Ada", "Lovelace", "ada@example.com", "secret");
-		when(userRepository.existsByEmail("ada@example.com")).thenReturn(true);
+		RegisterInput input = new RegisterInput("Ada", "Lovelace", "ada@example.com", "Password1@", "Password1@");
+		ConstraintViolation<RegisterInput> violation = org.mockito.Mockito.mock(ConstraintViolation.class);
+		when(violation.getMessage()).thenReturn("Email is already in use");
+		when(validator.validate(input)).thenReturn(java.util.Set.of(violation));
 
 		assertThatThrownBy(() -> userService.register(input)).isInstanceOf(BusinessRuleException.class);
 
@@ -245,7 +257,7 @@ class UserServiceImplTest {
 		User user = buildUser();
 		String rawToken = "raw-jwt";
 		when(jwtService.extractJti(rawToken)).thenReturn("jti-1");
-		when(blacklistedTokenRepository.existsByJti("jti-1")).thenReturn(false);
+		when(blacklistedTokenRepository.findByJtiForUpdate("jti-1")).thenReturn(Optional.empty());
 		when(jwtService.extractEmail(rawToken)).thenReturn("ada@example.com");
 		when(userRepository.findByEmail("ada@example.com")).thenReturn(Optional.of(user));
 		when(jwtService.extractIssuedAt(rawToken)).thenReturn(LocalDateTime.now());
@@ -264,7 +276,8 @@ class UserServiceImplTest {
 	void _13_ShouldStayIdempotent_WhenTokenIsAlreadyBlacklisted() {
 		String rawToken = "raw-jwt";
 		when(jwtService.extractJti(rawToken)).thenReturn("jti-1");
-		when(blacklistedTokenRepository.existsByJti("jti-1")).thenReturn(true);
+		when(blacklistedTokenRepository.findByJtiForUpdate("jti-1")).thenReturn(Optional.of(BlacklistedToken.builder()
+				.jti("jti-1").build()));
 
 		boolean result = userService.logout(rawToken);
 

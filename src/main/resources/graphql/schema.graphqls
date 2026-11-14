@@ -11,7 +11,7 @@ type Query {
     categories(page: Int, size: Int): CategoryPage!
     category(id: ID!): Category
 
-    products(categoryId: ID, page: Int, size: Int): ProductPage!
+    products(categoryId: ID, productName: String, minPrice: Float, maxPrice: Float, page: Int, size: Int): ProductPage!
     product(id: ID!): Product
 
     customers(page: Int, size: Int): CustomerPage!
