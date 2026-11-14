@@ -1,5 +1,6 @@
 package com.edgareldy.springgraphqltutorial.service.impl;
 
+import jakarta.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ import com.edgareldy.springgraphqltutorial.repository.RoleRepository;
 import com.edgareldy.springgraphqltutorial.repository.UserRepository;
 import com.edgareldy.springgraphqltutorial.security.JwtService;
 import com.edgareldy.springgraphqltutorial.service.EmailService;
+import com.edgareldy.springgraphqltutorial.service.RefreshTokenService;
 import com.edgareldy.springgraphqltutorial.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,12 +59,15 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
 	private final EmailService emailService;
+	private final Validator validator;
+	private final RefreshTokenService refreshTokenService;
 
 	public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
 			ActivationTokenRepository activationTokenRepository,
 			BlacklistedTokenRepository blacklistedTokenRepository,
 			PasswordResetTokenRepository passwordResetTokenRepository, PasswordEncoder passwordEncoder,
-			JwtService jwtService, EmailService emailService) {
+			JwtService jwtService, EmailService emailService, Validator validator,
+			RefreshTokenService refreshTokenService) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.activationTokenRepository = activationTokenRepository;
@@ -71,13 +76,16 @@ public class UserServiceImpl implements UserService {
 		this.passwordEncoder = passwordEncoder;
 		this.jwtService = jwtService;
 		this.emailService = emailService;
+		this.validator = validator;
+		this.refreshTokenService = refreshTokenService;
 	}
 
 	@Override
 	@Transactional
 	public AuthPayload register(RegisterInput input) {
-		if (userRepository.existsByEmail(input.email())) {
-			throw new BusinessRuleException("Email already in use: " + input.email());
+		var violations = validator.validate(input);
+		if (!violations.isEmpty()) {
+			throw new BusinessRuleException(violations.iterator().next().getMessage());
 		}
 		User user = User.builder()
 				.firstName(input.firstName())
@@ -96,7 +104,7 @@ public class UserServiceImpl implements UserService {
 				.expiresAt(LocalDateTime.now().plusHours(24))
 				.build();
 		activationTokenRepository.save(activationToken);
-		emailService.sendActivationEmail(user.getEmail(), activationToken.getToken());
+		emailService.sendActivationEmail(user, activationToken.getToken());
 
 		// No token: the account is disabled until activateAccount runs, so a JWT
 		// issued here would authenticate an account that cannot use it yet.
@@ -140,6 +148,7 @@ public class UserServiceImpl implements UserService {
 		}
 		String accessToken = jwtService.generateToken(user);
 		String refreshToken = jwtService.generateRefreshToken(user);
+		refreshTokenService.create(user, refreshToken);
 		return new AuthPayload(accessToken, "Bearer", refreshToken, jwtService.getExpirationMs(), user);
 	}
 
@@ -149,7 +158,9 @@ public class UserServiceImpl implements UserService {
 		String jti = jwtService.extractJti(rawToken);
 		// Already blacklisted: treat a repeat logout call as a success rather than
 		// failing on the jti unique constraint by inserting it a second time.
-		if (blacklistedTokenRepository.existsByJti(jti)) {
+		// PESSIMISTIC_WRITE prevents two concurrent requests from both passing
+		// this check before either has completed the insert.
+		if (blacklistedTokenRepository.findByJtiForUpdate(jti).isPresent()) {
 			return true;
 		}
 		User user = findByEmail(jwtService.extractEmail(rawToken));
@@ -162,6 +173,7 @@ public class UserServiceImpl implements UserService {
 				.expiresAt(jwtService.extractExpiration(rawToken))
 				.build();
 		blacklistedTokenRepository.save(blacklistedToken);
+		refreshTokenService.deleteByUser(user);
 		return true;
 	}
 
@@ -178,7 +190,7 @@ public class UserServiceImpl implements UserService {
 					.expiryDate(LocalDateTime.now().plusHours(1))
 					.build();
 			passwordResetTokenRepository.save(resetToken);
-			emailService.sendPasswordResetEmail(user.getEmail(), resetToken.getToken());
+			emailService.sendPasswordResetEmail(user, resetToken.getToken());
 			return true;
 		}).orElse(false);
 	}
@@ -298,14 +310,17 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public AuthPayload refreshToken(String rawRefreshToken) {
 		if (!jwtService.isRefreshToken(rawRefreshToken)) {
 			throw new BusinessRuleException("Invalid refresh token");
 		}
-		String jti = jwtService.extractJti(rawRefreshToken);
-		if (blacklistedTokenRepository.existsByJti(jti)) {
-			throw new BusinessRuleException("Refresh token has been revoked");
+		// Validate the token exists in DB - throws ResourceNotFoundException if revoked or expired.
+		com.edgareldy.springgraphqltutorial.entity.RefreshToken stored =
+				refreshTokenService.findByToken(rawRefreshToken);
+		if (stored.getExpiresAt().isBefore(java.time.LocalDateTime.now())) {
+			refreshTokenService.deleteByUser(stored.getUser());
+			throw new BusinessRuleException("Refresh token has expired");
 		}
 		String email = jwtService.extractEmail(rawRefreshToken);
 		User user = userRepository.findByEmailWithRolesAndPermissions(email)
@@ -316,8 +331,11 @@ public class UserServiceImpl implements UserService {
 		if (user.isAccountLocked()) {
 			throw new BusinessRuleException("Account is locked");
 		}
+		// Rotate: delete the old DB record and issue a fresh pair.
+		refreshTokenService.deleteByUser(user);
 		String newAccessToken = jwtService.generateToken(user);
 		String newRefreshToken = jwtService.generateRefreshToken(user);
+		refreshTokenService.create(user, newRefreshToken);
 		return new AuthPayload(newAccessToken, "Bearer", newRefreshToken, jwtService.getExpirationMs(), user);
 	}
 

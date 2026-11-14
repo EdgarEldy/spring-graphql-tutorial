@@ -19,6 +19,11 @@ spring:
           starttls:
             enable: false
 
+app:
+  frontend-url: ${APP_FRONTEND_URL:http://localhost:4200}
+  mail:
+    from: ${MAIL_FROM:noreply@spring-graphql-tutorial.com}
+
 jwt:
   secret: ${JWT_SECRET:dev-only-jwt-secret-please-override-in-production-0123456789}
   expiration-ms: 3600000
