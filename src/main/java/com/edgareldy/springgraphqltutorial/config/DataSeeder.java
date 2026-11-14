@@ -49,7 +49,7 @@ public class DataSeeder implements CommandLineRunner {
                     .firstName("Admin")
                     .lastName("User")
                     .email("admin@example.com")
-                    .password(passwordEncoder.encode("Admin1@seed"))
+                    .password(passwordEncoder.encode("Admin1234!"))
                     .enabled(true)
                     .accountLocked(false)
                     .build());
