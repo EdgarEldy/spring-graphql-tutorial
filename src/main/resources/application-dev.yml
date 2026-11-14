@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/spring_graphql_tutorial}
-    username: ${DB_USERNAME:spring_graphql_tutorial}
-    password: ${DB_PASSWORD:spring_graphql_tutorial}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/spring_graphql_db}
+    username: ${DB_USERNAME:spring_graphql_db}
+    password: ${DB_PASSWORD:spring_graphql_db}
   jpa:
     show-sql: true
   graphql:
