@@ -9,4 +9,9 @@ package com.edgareldy.springgraphqltutorial.graphql.input;
  * Project : spring-graphql-tutorial
  */
 public record LoginInput(String email, String password) {
+
+    @Override
+    public String toString() {
+        return "LoginInput[email=" + email + ", password=***]";
+    }
 }
