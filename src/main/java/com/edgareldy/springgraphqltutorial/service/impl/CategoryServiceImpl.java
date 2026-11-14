@@ -7,6 +7,8 @@ import com.edgareldy.springgraphqltutorial.graphql.input.CategoryInput;
 import com.edgareldy.springgraphqltutorial.graphql.input.CategoryPage;
 import com.edgareldy.springgraphqltutorial.repository.CategoryRepository;
 import com.edgareldy.springgraphqltutorial.service.CategoryService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
+	@Cacheable(value = "categories", key = "#id")
 	public Category findById(Long id) {
 		return getCategoryOrThrow(id);
 	}
@@ -51,6 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	@Transactional
+	@CacheEvict(value = "categories", key = "#id")
 	public Category update(Long id, CategoryInput input) {
 		Category category = getCategoryOrThrow(id);
 		if (!category.getCategoryName().equals(input.categoryName())
@@ -63,6 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	@Transactional
+	@CacheEvict(value = "categories", key = "#id")
 	public void delete(Long id) {
 		Category category = getCategoryOrThrow(id);
 		if (categoryRepository.countProductsByCategoryId(id) > 0) {
