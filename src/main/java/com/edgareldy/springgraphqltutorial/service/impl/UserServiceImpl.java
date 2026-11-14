@@ -158,7 +158,9 @@ public class UserServiceImpl implements UserService {
 		String jti = jwtService.extractJti(rawToken);
 		// Already blacklisted: treat a repeat logout call as a success rather than
 		// failing on the jti unique constraint by inserting it a second time.
-		if (blacklistedTokenRepository.existsByJti(jti)) {
+		// PESSIMISTIC_WRITE prevents two concurrent requests from both passing
+		// this check before either has completed the insert.
+		if (blacklistedTokenRepository.findByJtiForUpdate(jti).isPresent()) {
 			return true;
 		}
 		User user = findByEmail(jwtService.extractEmail(rawToken));
