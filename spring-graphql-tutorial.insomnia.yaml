@@ -1,0 +1,1612 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: spring-graphql-tutorial
+meta:
+  id: wrk_sgt_a1b2c3d4e5f6478a9b0c1d2e3f4a5b6c
+  created: 1794156611030
+  modified: 1794156611030
+  description: ""
+collection:
+  - name: Auth
+    meta:
+      id: fld_sgt_auth_1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d
+      created: 1788200000000
+      modified: 1788200000000
+      sortKey: -1788200700000
+      description: ""
+    children:
+      - url: "{{ baseUrl }}/graphql"
+        name: Register
+        meta:
+          id: req_sgt_auth_register_1a2b3c4d5e6f7a8b
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200700000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($input: RegisterInput!) { register(input: $input) { accessToken tokenType refreshToken expiresIn user { id firstName lastName email enabled } } }",
+              "variables": {
+                "input": {
+                  "firstName": "Ada",
+                  "lastName": "Lovelace",
+                  "email": "ada@example.com",
+                  "password": "Password1@"
+                }
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Activate account
+        meta:
+          id: req_sgt_auth_activate_2b3c4d5e6f7a8b9c
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200600000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($token: String!) { activateAccount(token: $token) }",
+              "variables": {
+                "token": "PASTE_ACTIVATION_TOKEN_FROM_EMAIL"
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Login
+        meta:
+          id: req_sgt_auth_login_3c4d5e6f7a8b9c0d
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200500000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($input: LoginInput!) { login(input: $input) { accessToken tokenType refreshToken expiresIn user { id firstName lastName email enabled roles { roleName } } } }",
+              "variables": {
+                "input": {
+                  "email": "admin@example.com",
+                  "password": "Admin1@seed"
+                }
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Refresh token
+        meta:
+          id: req_sgt_auth_refresh_4d5e6f7a8b9c0d1e
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200450000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($token: String!) { refreshToken(token: $token) { accessToken tokenType refreshToken expiresIn } }",
+              "variables": {
+                "token": "{{ refreshToken }}"
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Logout
+        meta:
+          id: req_sgt_auth_logout_5e6f7a8b9c0d1e2f
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200400000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation { logout }"
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Me (current user)
+        meta:
+          id: req_sgt_auth_me_6f7a8b9c0d1e2f3a
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200350000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "{ me { id firstName lastName email enabled accountLocked roles { roleName permissions { resource action } } } }"
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Update profile
+        meta:
+          id: req_sgt_auth_updateprofile_7a8b9c0d1e2f3a4b
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200300000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($input: UpdateProfileInput!) { updateProfile(input: $input) { id firstName lastName email } }",
+              "variables": {
+                "input": {
+                  "firstName": "Ada",
+                  "lastName": "Lovelace"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Request password reset
+        meta:
+          id: req_sgt_auth_resetreq_8b9c0d1e2f3a4b5c
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200200000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($email: String!) { requestPasswordReset(email: $email) }",
+              "variables": {
+                "email": "ada@example.com"
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Reset password
+        meta:
+          id: req_sgt_auth_reset_9c0d1e2f3a4b5c6d
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200100000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($token: String!, $newPassword: String!) { resetPassword(token: $token, newPassword: $newPassword) }",
+              "variables": {
+                "token": "PASTE_RESET_TOKEN_FROM_EMAIL",
+                "newPassword": "NewPassword1@"
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Categories
+    meta:
+      id: fld_sgt_categories_a1b2c3d4e5f6478a9b
+      created: 1788200000000
+      modified: 1788200000000
+      sortKey: -1788200600000
+      description: ""
+    children:
+      - url: "{{ baseUrl }}/graphql"
+        name: Get categories (paginated)
+        meta:
+          id: req_sgt_cat_list_a1b2c3d4e5f6478a
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200700000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($page: Int, $size: Int) { categories(page: $page, size: $size) { content { id categoryName createdAt updatedAt } totalElements totalPages page size } }",
+              "variables": {
+                "page": 0,
+                "size": 10
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Get category by ID
+        meta:
+          id: req_sgt_cat_get_b2c3d4e5f6478a9b
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200600000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($id: ID!) { category(id: $id) { id categoryName createdAt updatedAt } }",
+              "variables": {
+                "id": "1"
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Create category
+        meta:
+          id: req_sgt_cat_create_c3d4e5f6478a9b0c
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200500000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($input: CategoryInput!) { createCategory(input: $input) { id categoryName createdAt updatedAt } }",
+              "variables": {
+                "input": {
+                  "categoryName": "Electronics"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Update category
+        meta:
+          id: req_sgt_cat_update_d4e5f6478a9b0c1d
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200400000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!, $input: CategoryInput!) { updateCategory(id: $id, input: $input) { id categoryName updatedAt } }",
+              "variables": {
+                "id": "1",
+                "input": {
+                  "categoryName": "Consumer Electronics"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Delete category
+        meta:
+          id: req_sgt_cat_delete_e5f6478a9b0c1d2e
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200300000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!) { deleteCategory(id: $id) }",
+              "variables": {
+                "id": "1"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Products
+    meta:
+      id: fld_sgt_products_b2c3d4e5f6478a9b0c
+      created: 1788200000000
+      modified: 1788200000000
+      sortKey: -1788200500000
+      description: ""
+    children:
+      - url: "{{ baseUrl }}/graphql"
+        name: Get products (paginated)
+        meta:
+          id: req_sgt_prod_list_a1b2c3d4e5f6478b
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200700000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($categoryId: ID, $page: Int, $size: Int) { products(categoryId: $categoryId, page: $page, size: $size) { content { id productName unitPrice version category { id categoryName } } totalElements totalPages page size } }",
+              "variables": {
+                "page": 0,
+                "size": 10
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Get product by ID
+        meta:
+          id: req_sgt_prod_get_b2c3d4e5f6478b9c
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200600000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($id: ID!) { product(id: $id) { id productName unitPrice version category { id categoryName } } }",
+              "variables": {
+                "id": "1"
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Create product
+        meta:
+          id: req_sgt_prod_create_c3d4e5f6478b9c0d
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200500000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($input: ProductInput!) { createProduct(input: $input) { id productName unitPrice version category { id categoryName } } }",
+              "variables": {
+                "input": {
+                  "productName": "Mechanical Keyboard",
+                  "unitPrice": 79.99,
+                  "categoryId": "1"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Update product
+        meta:
+          id: req_sgt_prod_update_d4e5f6478b9c0d1e
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200400000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!, $input: ProductInput!) { updateProduct(id: $id, input: $input) { id productName unitPrice version } }",
+              "variables": {
+                "id": "1",
+                "input": {
+                  "productName": "Wireless Keyboard",
+                  "unitPrice": 89.99,
+                  "categoryId": "1"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Delete product
+        meta:
+          id: req_sgt_prod_delete_e5f6478b9c0d1e2f
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200300000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!) { deleteProduct(id: $id) }",
+              "variables": {
+                "id": "1"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Customers
+    meta:
+      id: fld_sgt_customers_c3d4e5f6478a9b0c1d
+      created: 1788200000000
+      modified: 1788200000000
+      sortKey: -1788200400000
+      description: ""
+    children:
+      - url: "{{ baseUrl }}/graphql"
+        name: Get customers (paginated)
+        meta:
+          id: req_sgt_cust_list_a1b2c3d4e5f6479a
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200700000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($page: Int, $size: Int) { customers(page: $page, size: $size) { content { id firstName lastName telephone email address } totalElements totalPages page size } }",
+              "variables": {
+                "page": 0,
+                "size": 10
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Get customer by ID
+        meta:
+          id: req_sgt_cust_get_b2c3d4e5f6479b9c
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200600000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($id: ID!) { customer(id: $id) { id firstName lastName telephone email address } }",
+              "variables": {
+                "id": "1"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Create customer
+        meta:
+          id: req_sgt_cust_create_c3d4e5f6479c0d1e
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200500000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($input: CustomerInput!) { createCustomer(input: $input) { id firstName lastName telephone email address } }",
+              "variables": {
+                "input": {
+                  "firstName": "Ada",
+                  "lastName": "Lovelace",
+                  "telephone": "+1 202-555-0100",
+                  "email": "ada@example.com",
+                  "address": "1 Analytical Engine Way"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Update customer
+        meta:
+          id: req_sgt_cust_update_d4e5f6479c0d1e2f
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200400000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!, $input: CustomerInput!) { updateCustomer(id: $id, input: $input) { id firstName lastName email } }",
+              "variables": {
+                "id": "1",
+                "input": {
+                  "firstName": "Ada",
+                  "lastName": "Lovelace-Updated",
+                  "telephone": "+1 202-555-0101",
+                  "email": "ada.updated@example.com",
+                  "address": "2 Difference Engine Street"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Delete customer
+        meta:
+          id: req_sgt_cust_delete_e5f6479c0d1e2f3a
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200300000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!) { deleteCustomer(id: $id) }",
+              "variables": {
+                "id": "1"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Orders
+    meta:
+      id: fld_sgt_orders_d4e5f6478a9b0c1d2e
+      created: 1788200000000
+      modified: 1788200000000
+      sortKey: -1788200300000
+      description: ""
+    children:
+      - url: "{{ baseUrl }}/graphql"
+        name: Get orders (paginated)
+        meta:
+          id: req_sgt_ord_list_a1b2c3d4e5f6480a
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200700000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($customerId: ID, $page: Int, $size: Int) { orders(customerId: $customerId, page: $page, size: $size) { content { id quantity total customer { id firstName lastName email } product { id productName unitPrice category { categoryName } } } totalElements totalPages page size } }",
+              "variables": {
+                "page": 0,
+                "size": 10
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Get order by ID
+        meta:
+          id: req_sgt_ord_get_b2c3d4e5f6480b9c
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200600000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($id: ID!) { order(id: $id) { id quantity total customer { id firstName lastName email } product { id productName unitPrice category { categoryName } } } }",
+              "variables": {
+                "id": "1"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Create order
+        meta:
+          id: req_sgt_ord_create_c3d4e5f6480c0d1e
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200500000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($input: OrderInput!) { createOrder(input: $input) { id quantity total customer { id firstName lastName } product { id productName unitPrice } } }",
+              "variables": {
+                "input": {
+                  "customerId": "1",
+                  "productId": "1",
+                  "quantity": 2
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Users
+    meta:
+      id: fld_sgt_users_e5f6478a9b0c1d2e3f
+      created: 1788200000000
+      modified: 1788200000000
+      sortKey: -1788200200000
+      description: ""
+    children:
+      - url: "{{ baseUrl }}/graphql"
+        name: Get users (paginated)
+        meta:
+          id: req_sgt_usr_list_a1b2c3d4e5f6481a
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200700000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($page: Int, $size: Int) { users(page: $page, size: $size) { content { id firstName lastName email enabled accountLocked roles { roleName } } totalElements totalPages page size } }",
+              "variables": {
+                "page": 0,
+                "size": 10
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Get user by ID
+        meta:
+          id: req_sgt_usr_get_b2c3d4e5f6481b9c
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200600000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($id: ID!) { user(id: $id) { id firstName lastName email enabled accountLocked roles { roleName permissions { resource action } } } }",
+              "variables": {
+                "id": "1"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Create user
+        meta:
+          id: req_sgt_usr_create_c3d4e5f6481c0d1e
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200500000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($input: CreateUserInput!) { createUser(input: $input) { id firstName lastName email enabled } }",
+              "variables": {
+                "input": {
+                  "firstName": "Grace",
+                  "lastName": "Hopper",
+                  "email": "grace@example.com",
+                  "password": "Password1@"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Update user
+        meta:
+          id: req_sgt_usr_update_d4e5f6481c0d1e2f
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200400000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!, $input: UpdateUserInput!) { updateUser(id: $id, input: $input) { id firstName lastName email } }",
+              "variables": {
+                "id": "2",
+                "input": {
+                  "firstName": "Grace",
+                  "lastName": "Hopper-Updated",
+                  "email": "grace.updated@example.com"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Lock user
+        meta:
+          id: req_sgt_usr_lock_e5f6481c0d1e2f3a
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200350000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!) { lockUser(id: $id) { id accountLocked } }",
+              "variables": {
+                "id": "2"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Unlock user
+        meta:
+          id: req_sgt_usr_unlock_f6481c0d1e2f3a4b
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200300000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!) { unlockUser(id: $id) { id accountLocked } }",
+              "variables": {
+                "id": "2"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Delete user
+        meta:
+          id: req_sgt_usr_delete_a1b2c3d4e5f6481d
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200200000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!) { deleteUser(id: $id) }",
+              "variables": {
+                "id": "2"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Update user roles
+        meta:
+          id: req_sgt_usr_roles_b2c3d4e5f6481e9c
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200100000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!, $input: UpdateUserRolesInput!) { updateUserRoles(id: $id, input: $input) { id roles { roleName } } }",
+              "variables": {
+                "id": "2",
+                "input": {
+                  "add": ["1"],
+                  "remove": []
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Roles
+    meta:
+      id: fld_sgt_roles_f6478a9b0c1d2e3f4a
+      created: 1788200000000
+      modified: 1788200000000
+      sortKey: -1788200100000
+      description: ""
+    children:
+      - url: "{{ baseUrl }}/graphql"
+        name: Get all roles
+        meta:
+          id: req_sgt_role_list_a1b2c3d4e5f6482a
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200700000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "{ roles { id roleName permissions { id resource action } } }"
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Get role by ID
+        meta:
+          id: req_sgt_role_get_b2c3d4e5f6482b9c
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200600000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "query ($id: ID!) { role(id: $id) { id roleName permissions { id resource action } } }",
+              "variables": {
+                "id": "1"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Create role
+        meta:
+          id: req_sgt_role_create_c3d4e5f6482c0d1e
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200500000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($input: RoleInput!) { createRole(input: $input) { id roleName } }",
+              "variables": {
+                "input": {
+                  "roleName": "MODERATOR"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Update role
+        meta:
+          id: req_sgt_role_update_d4e5f6482c0d1e2f
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200400000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!, $input: RoleInput!) { updateRole(id: $id, input: $input) { id roleName } }",
+              "variables": {
+                "id": "3",
+                "input": {
+                  "roleName": "SUPER_MODERATOR"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Delete role
+        meta:
+          id: req_sgt_role_delete_e5f6482c0d1e2f3a
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200300000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!) { deleteRole(id: $id) }",
+              "variables": {
+                "id": "3"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Update role permissions
+        meta:
+          id: req_sgt_role_perms_f6482c0d1e2f3a4b
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200200000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($roleId: ID!, $input: UpdateRolePermissionsInput!) { updateRolePermissions(roleId: $roleId, input: $input) { id roleName permissions { id resource action } } }",
+              "variables": {
+                "roleId": "1",
+                "input": {
+                  "add": ["1", "2"],
+                  "remove": []
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Permissions
+    meta:
+      id: fld_sgt_permissions_a1b2c3d4e5f6483a
+      created: 1788200000000
+      modified: 1788200000000
+      sortKey: -1788200000000
+      description: ""
+    children:
+      - url: "{{ baseUrl }}/graphql"
+        name: Get all permissions
+        meta:
+          id: req_sgt_perm_list_a1b2c3d4e5f6483b
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200700000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "{ permissions { id resource action } }"
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Create permission
+        meta:
+          id: req_sgt_perm_create_b2c3d4e5f6483c9c
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200600000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($input: PermissionInput!) { createPermission(input: $input) { id resource action } }",
+              "variables": {
+                "input": {
+                  "resource": "PRODUCTS",
+                  "action": "WRITE"
+                }
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ baseUrl }}/graphql"
+        name: Delete permission
+        meta:
+          id: req_sgt_perm_delete_c3d4e5f6483d0d1e
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: ""
+          sortKey: -1788200500000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "mutation ($id: ID!) { deletePermission(id: $id) }",
+              "variables": {
+                "id": "1"
+              }
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Subscription
+    meta:
+      id: fld_sgt_subscription_b2c3d4e5f6483e9c
+      created: 1788200000000
+      modified: 1788200000000
+      sortKey: -1787900000000
+      description: "Use GraphiQL (http://localhost:8080/graphiql) or a WebSocket client at ws://localhost:8080/graphql with the graphql-ws subprotocol. The request below shows the subscription document for reference."
+    children:
+      - url: "{{ baseUrl }}/graphql"
+        name: orderCreated (reference - use GraphiQL or WebSocket client)
+        meta:
+          id: req_sgt_sub_ordercreated_a1b2c3d4e5f6484a
+          created: 1788200000000
+          modified: 1788200000000
+          isPrivate: false
+          description: "Connect via WebSocket to ws://localhost:8080/graphql with the graphql-ws subprotocol. Send this document after the connection_init handshake."
+          sortKey: -1788200700000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "query": "subscription { orderCreated { id quantity total customer { id firstName lastName } product { id productName unitPrice } } }"
+            }
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_sgt_a1b2c3d4e5f6478a9b0c1d2e3f4a5b6c
+    created: 1788200000000
+    modified: 1788200000000
+environments:
+  name: Base Environment
+  meta:
+    id: env_sgt_a1b2c3d4e5f6478a9b0c1d2e3f4a5b6c
+    created: 1788200000000
+    modified: 1788200000000
+    isPrivate: false
+  data:
+    baseUrl: http://localhost:8080
+    token: ""
+    refreshToken: ""
