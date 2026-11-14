@@ -175,7 +175,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	void _07_ShouldTreatFurtherRequestsAsAnonymous_WhenTokenIsBlacklistedByLogout() {
 		String email = uniqueEmail("logout");
 		createEnabledUser(email, "secret-password");
-		String jwt = login(email, "Password1@");
+		String jwt = login(email, "secret-password");
 
 		authenticatedTester(jwt).document("mutation { logout }")
 				.execute()
@@ -266,7 +266,7 @@ class AuthControllerTest extends GraphQlIntegrationTestSupport {
 	void _14_ShouldReturnAuthenticatedUser_WhenMeIsQueriedWithValidToken() {
 		String email = uniqueEmail("me");
 		createEnabledUser(email, "secret-password");
-		String jwt = login(email, "Password1@");
+		String jwt = login(email, "secret-password");
 
 		HttpGraphQlTester authenticated = authenticatedTester(jwt);
 		authenticated.document("{ me { email } }")
