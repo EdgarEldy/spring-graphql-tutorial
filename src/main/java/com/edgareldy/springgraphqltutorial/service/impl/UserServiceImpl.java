@@ -1,5 +1,6 @@
 package com.edgareldy.springgraphqltutorial.service.impl;
 
+import jakarta.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,12 +58,13 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
 	private final EmailService emailService;
+	private final Validator validator;
 
 	public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
 			ActivationTokenRepository activationTokenRepository,
 			BlacklistedTokenRepository blacklistedTokenRepository,
 			PasswordResetTokenRepository passwordResetTokenRepository, PasswordEncoder passwordEncoder,
-			JwtService jwtService, EmailService emailService) {
+			JwtService jwtService, EmailService emailService, Validator validator) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.activationTokenRepository = activationTokenRepository;
@@ -71,13 +73,15 @@ public class UserServiceImpl implements UserService {
 		this.passwordEncoder = passwordEncoder;
 		this.jwtService = jwtService;
 		this.emailService = emailService;
+		this.validator = validator;
 	}
 
 	@Override
 	@Transactional
 	public AuthPayload register(RegisterInput input) {
-		if (userRepository.existsByEmail(input.email())) {
-			throw new BusinessRuleException("Email already in use: " + input.email());
+		var violations = validator.validate(input);
+		if (!violations.isEmpty()) {
+			throw new BusinessRuleException(violations.iterator().next().getMessage());
 		}
 		User user = User.builder()
 				.firstName(input.firstName())
